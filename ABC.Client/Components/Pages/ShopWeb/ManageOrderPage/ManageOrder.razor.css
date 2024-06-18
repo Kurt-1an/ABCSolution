@@ -1,0 +1,25 @@
+﻿.FooterminHeight {
+    min-height: calc(130vh - 395px);
+}
+
+h1 {
+    color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+/* Default styles for the container */
+.container {
+    width: 100%; 
+    max-width: 100%; 
+    padding-top: 2rem;
+    padding-bottom: 5rem;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 992px) {
+    .container {
+        padding-top: 1rem; /* Adjust padding for smaller screens */
+        padding-bottom: 3rem; /* Adjust padding for smaller screens */
+        /* Add other styles for smaller screens */
+    }
+}

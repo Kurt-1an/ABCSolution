@@ -1,0 +1,52 @@
+﻿h1 {
+    color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+p {
+    font-size: 12px;
+    margin: 1px;
+}
+
+.toprow {
+    margin-bottom: 1rem;
+}
+
+.search {
+    margin-bottom: 1rem;
+    justify-content: end;
+}
+
+.title {
+    margin-bottom: 1rem;
+}
+
+.buttonback, .search {
+    text-align: end;
+}
+
+.prodImage {
+    margin-block: auto;
+    width: 200px;
+    height: auto;
+    max-height: 118px;
+    max-width: 176px;
+}
+
+.list-group {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 0.1px solid grey;
+}
+
+.texts {
+    margin-block: auto;
+}
+
+.row {
+    justify-content: space-between;
+}
+
+.button {
+    margin-bottom: 1rem;
+}

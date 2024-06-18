@@ -1,0 +1,769 @@
+@page "/POS"
+@layout AdminLayout
+@using System.Globalization;
+@using ABC.Client.Components.Pages.POS.Components;
+@using ABC.Shared.Utility
+@using Layout;
+
+@rendermode InteractiveServer
+<Toast @ref="toastRef" />
+
+<PageTitle>ABC - POS</PageTitle>
+
+
+@if (ShowStockTransferAlert)
+{
+    <div class="zindex-css text-13px alert alert-warning shadow col-auto mx-auto text-center position-fixed"
+         id="incompleteProfileNotice-brokerList" role="alert">
+        <div class="fw-bold text-start my-2">
+            <i class=" bi bi-exclamation-triangle-fill text-warning me-2"></i> Store Out of Stock.
+        </div>
+        <div class="">
+            Please process a stock transfer first.
+        </div>
+    </div>
+}
+
+<section class="container my-3">
+    @* CUSTOMER INFORMATION *@
+    <section class="hideWhenPrint">
+        <section class="row pb-3">
+            <div class="col-lg-8 col-sm-12 text-start mb-3 mb-sm-0">
+                <h1 style="color: #223442;"><b>Point of Sales</b></h1>
+            </div>
+        </section>
+        <section class="accordion accordion-flush border shadow" id="accordionFlushExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-primary bg-opacity-25 fs-5 fw-bold" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false"
+                            aria-controls="flush-collapseOne">
+                        Customer Information
+                    </button>
+                </h2>
+                <section id="flush-collapseOne" class="accordion-collapse collapse"
+                         data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        <section class="row row-cols-lg-2 g-2">
+                            <div class="form-floating col">
+                                <input type="text" class="form-control" id="floatingFirstName" placeholder="First Name"
+                                       @bind-value="Customer.FirstName">
+                                <label for="floatingFirstName" class="bg-transparent">First Name</label>
+                            </div>
+                            <div class="form-floating col">
+                                <input type="text" class="form-control" id="floatingLastName" placeholder="Last Name"
+                                       @bind-value="Customer.LastName">
+                                <label for="floatingSurName">Last Name</label>
+                            </div>
+                            <div class="form-floating col">
+                                <input type="email" class="form-control" id="floatingEmail"
+                                       placeholder="name@example.com" @bind-value="Customer.EmailAddress">
+                                <label for="floatingEmail">Email address</label>
+                            </div>
+                            <div class="form-floating col">
+                                <input type="text" class="form-control" @bind-value="Customer.ContactNumber"
+                                       @oninput="GetCustomerList" @onfocusin="() => ShowDropdownHandler(true)"
+                                       @onfocusout="() => ShowDropdownHandler(false)" id="floatingNumber" placeholder="Contact Number" maxlength="11" />
+                                <label for="floatingNumber">Contact Number</label>
+                                <div class="dropdown">
+                                    <ul class='dropdown-menu col-12 mt-3 @(CustomerList.Count > 0 && ShowDropdown ? "show" : "")'>
+                                        @foreach (var customer in CustomerList)
+                                        {
+                                            <li>
+                                                <div class="dropdown-item cursor-pointer d-flex"
+                                                     @onclick='() => PopulateFormData(customer.Id)'>
+                                                    @customer.FirstName @customer.LastName
+                                                    <span class="ms-auto">
+                                                        <i class="bi bi-telephone-fill text-secondary fs-5 me-2"></i>
+                                                        @customer.ContactNumber
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </section>
+
+                        <section class="py-2 mt-4 border-top border-dark px-0 m-x0 fw-bold">
+                            Billing Address
+                        </section>
+                        <section class="row row-cols-lg-3 g-2">
+                            <div class="form-floating col">
+                                <input type="text" class="form-control" id="floatingUnitNumber"
+                                       placeholder="Apt./Suite/Unit/House #" @bind-value="Customer.ApSuUn">
+                                <label for="floatingUnitNumber" class="bg-transparent">Apt./Suite/Unit/House #</label>
+                            </div>
+                            <div class="form-floating col">
+                                <input type="text" class="form-control" id="floatingStreet"
+                                       placeholder="Street or Subdiv." @bind-value="Customer.StreetorSubd">
+                                <label for="floatingStreet">Street or Subdiv.</label>
+                            </div>
+                            <div class="form-floating col">
+                                <input type="text" class="form-control" id="floatingBarangay" placeholder="Barangay"
+                                       @bind-value="Customer.Barangay">
+                                <label for="floatingBarangay">Barangay</label>
+                            </div>
+                            <div class="form-floating col">
+                                <input type="text" class="form-control" id="floatingCity" placeholder="City"
+                                       @bind-value="Customer.City">
+                                <label for="floatingCity">City</label>
+                            </div>
+                            <div class="form-floating col">
+                                <input type="text" class="form-control" id="floatingProvince" placeholder="Province"
+                                       @bind-value="Customer.Province">
+                                <label for="floatingProvince">Province</label>
+                            </div>
+                            <div class="form-floating col">
+                                <input type="text" class="form-control" id="floatingZipCode" placeholder="Zip Code" maxlength="4"
+                                       @bind-value="Customer.ZipCode">
+                                <label for="floatingZipCode">Zip Code</label>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </section>
+    @* PRODUCT INFORMATION *@
+    <section class="row g-2 pt-3 hideWhenPrint">
+        <section class="col-8">
+            <div class="border p-3 container shadow">
+                <div class="row border-bottom mb-3">
+                    <p class="fs-5 fw-bold">Product Details</p>
+                </div>
+
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping">
+                        <i class="bi bi-search me-2"></i> Search
+                        Product
+                    </span>
+                    <input type="text" class="form-control" @bind-value="ProductSearchInput" @oninput="GetProductList"
+                           @onfocusin="() => ShowProductDropdownHandler(true)"
+                           @onfocusout="() => ShowProductDropdownHandler(false)" aria-label="Search Product"
+                           aria-describedby="addon-wrapping" />
+
+                </div>
+                <div class="dropdown">
+                    <ul class='dropdown-menu col-12 mt-3 @(ProductList.Count > 0 && ShowProductDropdown ? "show" : "")'>
+                        @foreach (var product in ProductList)
+                        {
+                            @if (product.status == SD.InStock || product.status == SD.AddsomeLowStock || product.status == SD.AheadLowStock)
+                            {
+                                <li>
+                                    <div class="dropdown-item cursor-pointer d-flex" data-bs-toggle="modal"
+                                         data-bs-target="#productModal" @onclick="() => PopulateProductDetails(product.Id)">
+                                        <div class="me-3">
+                                            @if (!String.IsNullOrEmpty(product.ImageUrl))
+                                            {
+                                                <img src="@product.ImageUrl" alt="@product.productName" style="max-width: 100px; max-height: 100px;">
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-image fs-2"></i>
+                                            }
+                                        </div>
+                                        <div class="">
+                                            <div class="text-14px">Product Name: @product.productName</div>
+                                            <div class="text-14px">SKU: @product.SKU</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+
+                <!--DISPLAY SELECTED ITEMS-->
+                <table class="table table-striped table-hover table-sm mt-3">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Product</th>
+                            <th scope="col" class="text-center">Quantity</th>
+                            <th scope="col" class="text-center">Price</th>
+                            <th scope="col" class="text-center">Total</th>
+                            <th scope="col" class="text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ShoppingCart.Count > 0)
+                        {
+                            foreach (var product in ShoppingCart)
+                            {
+                                <tr>
+                                    <th scope="row"> @product.Product.Id </th>
+                                    <td> @product.Product.productName </td>
+                                    <td class="text-center"> @product.Count </td>
+                                    <td class="text-center"> @product.Product.RetailPrice.ToString("#,##0.00") </td>
+                                    <td class="text-center"> @product.TotalPrice.ToString("#,##0.00") </td>
+                                    <td class="text-center d-flex justify-content-around">
+                                        <i class="bi bi-x-square text-danger cursor-pointer" title="Remove Item"
+                                           tabindex="0" data-bs-toggle="modal"
+                                           data-bs-target="#removeItem" @onclick='() => ItemPostRemoval(product.Product.Id)'></i>
+                                    </td>
+                                </tr>
+                            }
+                            @for (var i = 0; i < 10 - ShoppingCart.Count; i++)
+                            {
+                                <tr>
+                                    <th scope="row"> - </th>
+                                    <td> - </td>
+                                    <td class="text-center"> - </td>
+                                    <td class="text-center"> - </td>
+                                    <td class="text-center"> - </td>
+                                    <td class="text-center"> - </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            @for (var i = 0; i < 10; i++)
+                            {
+                                <tr>
+                                    <th scope="row"> - </th>
+                                    <td> - </td>
+                                    <td class="text-center"> - </td>
+                                    <td class="text-center"> - </td>
+                                    <td class="text-center"> - </td>
+                                    <td class="text-center"> - </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        @* Transactin Details *@
+        <section class="col-4">
+            <div class="border p-3 container shadow justify-content-center">
+                <div class="row border-bottom mb-3">
+                    <p class="fs-5 fw-bold">Transaction Details</p>
+                </div>
+
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping">Store</span>
+                    <select class="form-select" aria-label="Store" aria-describedby="addon-wrapping" @bind="ApplicationUser.StoreName">
+                        @foreach (var store in storeList)
+                        {
+                            <option value="@store.storeName">@store.storeName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text border border-end" id="addon-wrapping">Sales</span>
+                    <select class="form-select" id="inputGroupSelect01" @onchange="SelectedSalesChannelChanged"
+                            value="@SelectedSalesChannel">
+                        <option selected disabled>- Choose Sales Channel -</option>
+                        <option value="@SD.WalkIn">@SD.WalkIn</option>
+                        <option value="@SD.OnCall">@SD.OnCall</option>
+                        <option value="@SD.ChatBased">@SD.ChatBased</option>
+                    </select>
+                </div>
+
+                <div class="btn-group btn-group-sm col-12 mt-3 " role="group" aria-label="Small button group">
+                    <button type="button" class="btn btn-outline-primary" id="addDiscount" data-bs-toggle="modal"
+                            data-bs-target="#discountModal">
+                        <i class="bi bi-pencil-square me-2"></i> Discount
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="openChargeModalButton"
+                            data-bs-toggle="modal" data-bs-target="#feesModal">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Fees
+                    </button>
+                </div>
+
+                <div class="row border-top mb-3 m-1 mt-3">
+                    <table class="table table-sm table-hover">
+                        <tbody>
+                            <tr>
+                                <td>Discount/s:</td>
+                                <td class="text-end">@OrderSummary.Discount.ToString("C", new CultureInfo("en-PH"))</td>
+                            </tr>
+                            <tr>
+                                <td>Service Fee:</td>
+                                <td class="text-end">@OrderSummary.ServiceFee.ToString("C", new CultureInfo("en-PH"))</td>
+                            </tr>
+                            <tr>
+                                <td>Delivery Fee:</td>
+                                <td class="text-end">@OrderSummary.DeliveryFee.ToString("C", new CultureInfo("en-PH"))</td>
+                            </tr>
+                            <tr>
+                                <td>Total:</td>
+                                <td class="text-end">@OrderSummary.OrderTotal.ToString("C", new CultureInfo("en-PH"))</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row border-top mb-3 m-1 mt-3">
+                    <table class="table table-sm table-hover">
+                        <tbody>
+                            <tr>
+                                <td>Amount Tendered:</td>
+                                <td class="text-end">@AmountTendered.ToString("C", new CultureInfo("en-PH"))</td>
+                            </tr>
+                            <tr>
+                                <td>Change:</td>
+                                <td class="text-end">@Change.ToString("C", new CultureInfo("en-PH"))</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="btn-group btn-group-sm col-12" role="group" aria-label="Small button group">
+                    <button type="button" class="btn btn-outline-success col-6" id="addDiscount" data-bs-toggle="modal"
+                            data-bs-target="#cashModal">
+                        <i class="bi bi-cash-coin me-2"></i> Cash Payment
+                    </button>
+                    <button type="button" class="btn btn-outline-primary col-6" id="openChargeModalButton"
+                            data-bs-toggle="modal" data-bs-target="#gcashModal">
+                        <i class="bi bi-bank me-2"></i> GCash Payment
+                    </button>
+                </div>
+                <div class="row border-top mb-3 m-1 mt-3">
+                    <table class="table table-sm table-hover">
+                        <tbody>
+                            <tr>
+                                <td>Carier:</td>
+                                <td class="text-end">
+                                    <input type="text" class="form-control" placeholder="Carrier" @bind-value="OrderSummary.Carrier" aria-label="Carrier" aria-describedby="addon-wrapping">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Official Receipt:</td>
+                                <td class="text-end">
+                                    <input type="text" class="form-control" placeholder="OfficialReceipt" @bind-value="OrderSummary.OfficialReceipt" aria-label="OfficialReceipt" aria-describedby="addon-wrapping">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="btn-group btn-group-md col-12" role="group" aria-label="Small button group">
+                    @if (AmountTendered == 0 || AmountTendered < OrderSummary.OrderTotal)
+                    {
+                        <button type="button" class="btn btn-secondary col-6" data-bs-toggle="modal" disabled>
+                            Complete
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-success col-6" data-bs-toggle="modal" data-bs-target="#completeModal">
+                            Complete
+                        </button>
+                    }
+                    <button type="button" class="btn btn-danger col-6" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                        Cancel
+                    </button>
+                </div>
+                <div class="row px-2 my-2">
+                    <button type="button" class="btn btn-warning col-12 btn-sm" data-bs-toggle="modal" data-bs-target="#newModal">
+                        New Transaction
+                    </button>
+                </div>
+            </div>
+        </section>
+    </section>
+
+</section>
+
+
+@* Complete *@
+<div class="modal fade hideWhenPrint" id="completeModal" tabindex="-1" aria-labelledby="completeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completeModalLabel">Complete Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <h6>Are you sure you want to complete the this transaction?</h6>
+                <h6 class="alert text-danger">This is an irreversible action!</h6>
+            </div>
+            <div class="modal-footer">
+                <div class="container">
+                    <div class="row">
+                        @* <button type="button" class="btn btn-secondary col me-2" data-bs-toggle="modal" data-bs-target="#ReceiptModal">Print Receipt</button> *@
+                        <button type="button" class="btn btn-danger col me-2" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary col" @onclick="CompleteOrder" data-bs-dismiss="modal">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Cancel *@
+<div class="modal fade hideWhenPrint" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">Cancel Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <h6>Are you sure you want to cancel this transaction?</h6>
+                <h6 class="alert text-danger">This is an irreversible action!</h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="CancelOrder" data-bs-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* New Transaction *@
+<div class="modal fade hideWhenPrint" id="newModal" tabindex="-1" aria-labelledby="newModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newModalLabel">New Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <h6>Are you sure you want to start a new transaction?</h6>
+                <h6 class="alert text-danger">This is an irreversible action!</h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="NewTransaction" data-bs-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* PRODUCT MODAL *@
+<div class="modal fade hideWhenPrint" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="productModalLabel">Product Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    @ProductInModal.productName
+                    @ProductInModal.SKU
+                    @ProductInModal.RetailPrice
+                </div>
+
+                <div class="form-group" id="quantityInputDiv">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" class="form-control pt-3" id="quantity" @bind-value="ProductInModal.Quantity"
+                           @bind-value:event="oninput" placeholder="Enter quantity" aria-label="Quantity"
+                           aria-describedby="quan">
+                    <div class="text-danger">
+                        @if (ProductInModal.StockPerStore != null)
+                        {
+                            @if (ProductInModal.Quantity < 1 || ProductInModal.Quantity > ProductInModal.StockPerStore.TotalStocks)
+                            {
+                                <p>Please enter a quantity between 1 and @ProductInModal.StockPerStore.TotalStocks</p>
+                            }
+                        }
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                @if (ProductInModal.StockPerStore != null)
+                {
+                    @if (ProductInModal.Quantity >= 1 && ProductInModal.Quantity <= ProductInModal.StockPerStore.TotalStocks)
+                    {
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="() => AddToCart(ProductInModal.Id, ProductInModal.Quantity)">
+                            Confirm
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" disabled>Confirm</button>
+                    }
+                }
+                @* @if (ProductInModal.Quantity >= 1 && ProductInModal.Quantity <= ProductInModal.StockQuantity)
+                {
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                @onclick="() => AddToCart(ProductInModal.Id, ProductInModal.Quantity)">
+                Confirm
+                </button>
+                }
+                else
+                {
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" disabled>Confirm</button>
+                } *@
+            </div>
+        </div>
+    </div>
+</div>
+
+@* FEES MODAL *@
+<div class="modal fade hideWhenPrint" id="feesModal" tabindex="-1" aria-labelledby="feesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="feesModalLabel">Fees</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body">
+                    <div class="row d-flex pt-2 pb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Service Fee</span>
+                            <input type="number" class="form-control" id="service-fee-input" aria-label="Default"
+                                   aria-describedby="inputGroup-sizing-default" @bind-value="OrderSummary.ServiceFee"
+                                   @bind-value:event="oninput" @onchange="UpdateTotalFees">
+                        </div>
+                    </div>
+                    <div class="row d-flex pt-2 pb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Delivery Fee</span>
+                            <input type="number" class="form-control" id="delivery-fee-input" aria-label="Default"
+                                   aria-describedby="inputGroup-sizing-default" @bind-value="OrderSummary.DeliveryFee"
+                                   @bind-value:event="oninput" @onchange="UpdateTotalFees">
+                        </div>
+                    </div>
+                    <div class="row pt-4 pb-4 text-center">
+                        <p>Total Fees Amount:</p>
+                        <div>
+                            @TotalFees.ToString("#,##0.00") PHP
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="CancelFees">Cancel</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        @onclick="UpdateOrderSummary">
+                    Apply Fees
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* DISCOUNT MODAL *@
+<div class="modal fade hideWhenPrint" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="discountModalLabel">Discount</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="btn-group mx-auto col-12" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" @onclick='() => UpdatePostTotalDiscount("percent")' checked>
+                    <label class="btn btn-outline-primary" for="btnradio1">Apply By Percentage</label>
+
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" @onclick='() => UpdatePostTotalDiscount("amount")'>
+                    <label class="btn btn-outline-primary" for="btnradio3">Apply By Amount</label>
+                </div>
+                <div class="input-group flex-nowrap my-3 col">
+                    <span class="input-group-text" id="addon-wrapping">Discount to Apply</span>
+                    <input type="number" class="form-control" id="service-fee-input" aria-label="Default"
+                           aria-describedby="inputGroup-sizing-default" @bind-value="discount.DiscountAmount"
+                           @bind-value:event="oninput" @onchange='() => UpdatePostTotalDiscount(discount.DiscountType)'>
+                </div>
+
+                <div class="col-lg-6 d-flex">
+                    Discount in value: <span class="ms-auto"> @discount.TotalDiscount.ToString("#,##0.00") </span>
+                </div>
+                <div class="col-lg-6 d-flex">
+                    Discounted Price: <span class="ms-auto"> @discount.DiscountedPrice.ToString("#,##0.00") </span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal" @onclick="() => UpdateTotalDiscount()">Apply Discount</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* CASH PAYMENT MODAL *@
+<div class="modal fade hideWhenPrint" id="cashModal" tabindex="-1" aria-labelledby="cashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="cashModalLabel">Cash Payment</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text" id="totalAmount">Total Amount</span>
+                            <input type="text" class="form-control" @bind-value="OrderSummary.OrderTotal" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text" id="change">Change</span>
+                            <input type="text" class="form-control" @bind-value="Change" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-group input-group-lg my-3">
+                            <span class="input-group-text" id="amountTendered">Amount Tendered</span>
+                            <input type="text" class="form-control" @bind="@AmountTendered" @oninput="CalculateChange">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="ClearCashModal">Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="() => PaymentMethodHandler(SD.PaymentModeCash)" data-bs-dismiss="modal">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* GCASH PAYMENT MODAL *@
+<div class="modal fade hideWhenPrint" id="gcashModal" tabindex="-1" aria-labelledby="gcashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="gcashModalLabel">Gcash Payment</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-12 my-2">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="Reference #"
+                                   required />
+                        </div>
+                        <div class="col-12 my-2">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="Sender's name"
+                                   required />
+                        </div>
+                        <div class="col-12 my-2">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="GCash Number" maxlength="11"
+                                   required />
+                        </div>
+                    </div>
+                    <div class="row my-3">
+                        <div class="col-6">
+                            <label id="total"><strong>Total</strong></label>
+                            <input type="text" class="form-control" @bind-value="OrderSummary.OrderTotal" readonly>
+                        </div>
+                        <div class="col-6">
+                            <label id="change"><strong>Change</strong></label>
+                            <input type="text" class="form-control" @bind-value="Change" readonly>
+                        </div>
+                    </div>
+                    <div class="row my-3">
+                        <div class="col-12">
+                            <label id="amountTendered"><strong>Amount Tendered</strong></label>
+                            <input type="text" class="form-control" @bind="@AmountTendered" @oninput="CalculateChange">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="() => PaymentMethodHandler(SD.PaymentModeBank)" data-bs-dismiss="modal">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* REMOVE ITEM FROM CART MODAL *@
+<div class="modal fade hideWhenPrint" id="removeItem" tabindex="-1" aria-labelledby="removeItemLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="modal-body">
+                    <div class="text-center">
+                        Remove the item?
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center border p-0">
+                <button type="button" class="btn text-center col border-end" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn text-center col" data-bs-dismiss="modal" @onclick="RemoveFromCart">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* POS RECEIPT *@
+<div class="modal fade" id="ReceiptModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="uploadModalLabel">Receipt</h5>
+                <button type="button" class="btn-close btn-close-white hideWhenPrint" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Order Summary -->
+                <div class="row justify-content-center">
+                    <div class="col-12 pb-4">
+                        <div class="row text-center">
+                            <small><img src="/image/abclogo.png" style='max-width: 150px; margin-bottom: 20px; filter: grayscale(100%);' /></small>
+                            <small class="text-muted">@ApplicationUser.StoreName</small>
+                            <small class="text-muted">
+                                @ApplicationUser.Store.storeUnitNumber,
+                                @ApplicationUser.Store.storeStreetSubdv,
+                                @ApplicationUser.Store.storeBarangay,
+                                @ApplicationUser.Store.storeCity,
+                                @ApplicationUser.Store.storeProvince,
+                                @ApplicationUser.Store.storeZipCode,
+                                Philippines
+                            </small>
+                            <small class="text-muted">@DateTime.Now</small>
+                        </div>
+
+                        <hr />
+                        <div>
+                            @foreach (var item in ShoppingCart)
+                            {
+                                <div class="list-group">
+                                    <div class="@(item.Remark != null ? "grayed-out" : "")">
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-8">
+                                                    <h6 class="my-0">@item.Product.productName</h6>
+                                                    <small class="text-muted">Quantity: @item.Count</small>
+                                                </div>
+                                                <div class="col-4 text-end">
+                                                    <span class="text-muted"><b>@("\u20B1" + (item.Product.RetailPrice * item.Count).ToString("#,###.00"))</b></span><br />
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <p><small>Additional Charges: @OrderSummary.ServiceFee.ToString("C", new CultureInfo("en-PH"))</small></p>
+                                <p><small>Applied Discount: @OrderSummary.Discount.ToString("C", new CultureInfo("en-PH"))</small></p>
+                                <p><small>Delivery Fee: @OrderSummary.DeliveryFee.ToString("C", new CultureInfo("en-PH"))</small></p>
+
+                            </div>
+                            <div class="col-6 text-end">
+                                <h4>Total: @OrderSummary.OrderTotal.ToString("C", new CultureInfo("en-PH"))</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer hideWhenPrint">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="Print">Print</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+@using ABC.Shared.Models
+@using ABC.Client.Components
+@using System.Globalization
+
+@page "/ProductDetails"
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+<Toast @ref="toastRef" />
+
+
+<PageTitle>ABC - @ProductName </PageTitle>
+
+<section class="main container FooterminHeight">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/Shop">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@ProductName</li>
+        </ol>
+    </nav>
+
+    <EditForm Model="ShoppingCart" OnValidSubmit="SaveShoppingCart" FormName="ShoppingCartForm">
+        <InputNumber hidden @bind-Value="ShoppingCart.Product.Id" />
+        <section class="productInfo container shadow col-12">
+            <div class="card-body">
+                <div class="row mainPart">
+                    <div class="col-xl-4 col-lg-5 col-md-12 col-sm-12">
+                        <img src="@Product.ImageUrl" class="img-fluid productImage" />
+                    </div>
+
+                    <div class="col-xl-8 col-lg-7 col-md-12 col-sm-12">
+                        <div class="row secondmainPart">
+                            <h2>@ShoppingCart.Product.productName</h2>
+                            <h6>Available Stock: @Product.StockPerStore.TotalStocks</h6>
+                            <hidden @ProductId />
+                            <h3> @ShoppingCart.Product.RetailPrice.ToString("C", new CultureInfo("en-PH")) </h3>
+                        </div>
+                        <div class="row secondhalf">
+                            <h6>Quantity</h6>
+                            <div class="row secondhalfcontent">
+                                <div class="col-lg-8 col-md-12 col-sm-12">
+                                    <input @bind-value="@ShoppingCart.Quantity" type="number" min="1" max="@Product.StockPerStore.TotalStocks" class="form-control text-end" />
+
+                                    @if (ShoppingCart.Quantity <= 0)
+                                    {
+                                        <p class="text-danger">* Quantity cannot be negative or zero</p>
+                                    }
+                                    else if (ShoppingCart.Quantity > Product.StockPerStore.TotalStocks)
+                                    {
+                                        <p class="text-danger">* Input quantity exceeds available stock.</p>
+                                    }
+                                </div>
+                                <div class="button col-lg-4 col-md-12 col-sm-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row productDescription">
+                    <h5>Product's Description:</h5>
+                    <p>@Product.Description</p>
+                </div>
+            </div>
+        </section>
+    </EditForm>
+</section>
+

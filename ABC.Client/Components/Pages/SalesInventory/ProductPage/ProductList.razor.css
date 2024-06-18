@@ -1,0 +1,14 @@
+﻿.search {
+    margin-bottom: 1rem;
+    justify-content: end;
+}
+
+h1 {
+    color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+.prodImage {
+    width: 50px;
+    height: 50px;
+}

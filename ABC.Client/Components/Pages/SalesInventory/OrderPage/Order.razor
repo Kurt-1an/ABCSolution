@@ -1,0 +1,135 @@
+@using ABC.Shared.Models.ViewModels
+@using Layout
+@using System.Globalization;
+
+@page "/ManageOrderABC"
+@layout AdminLayout
+@rendermode InteractiveServer
+
+
+<PageTitle>ABC - Manage Orders</PageTitle>
+
+<div class="container pt-2 pb-5">
+    <div class="row pb-2">
+        <!-- Title -->
+        <div class="title col-lg-8 col-sm-12">
+            <h1>Manage Orders</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-8">
+            <div class="d-flex justify-content-between pb-3 pt-2">
+                <div class="list-group list-group-horizontal-sm">
+                    <button type="button" class="list-group-item @all" @onclick="@(() => SetActiveStatus("all"))">All</button>
+                    <button type="button" class="list-group-item @pending" @onclick="@(() => SetActiveStatus("pending"))">To Process</button>
+                    <button type="button" class="list-group-item @inprocess" @onclick="@(() => SetActiveStatus("inprocess"))">Processing</button>
+                    <button type="button" class="list-group-item @shipped" @onclick="@(() => SetActiveStatus("shipped"))">Out for Delivery</button>
+                    <button type="button" class="list-group-item @cancelled" @onclick="@(() => SetActiveStatus("cancelled"))">Cancelled</button>
+                    <button type="button" class="list-group-item @completed" @onclick="@(() => SetActiveStatus("completed"))">Completed</button>
+                </div>
+            </div>
+        </div>
+        @if (activeStatus == "all")
+        {
+            <div class="col-4">
+                <div class="input-group flex-nowrap">
+                    <input type="text" class="form-control h-100" @bind-value="SearchInput" @oninput="SearchFeature" aria-label="Search" placeholder="Search..." />
+                </div>
+            </div>
+        }
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Order Date</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th class="text-center">Payment Mode</th>
+                    <th class="text-center">Total</th>
+                    <th class="text-center">Sales Type</th>
+                    <th class="text-center">Store</th>
+                    <th class="text-center">Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            @if (OrderHeader.Count > 0)
+            {
+                double totalToPay = 0;
+                @foreach (var order in OrderHeader.OrderByDescending(o => o.Id))
+                {
+                    <tr>
+                        <th scope="row"> @order.Id </th>
+                        <td>@order.OrderDate.ToShortDateString()</td>
+                        @if (order.ApplicationUser != null)
+                        {
+                            <td> @($"{order.ApplicationUser.FirstName} {order.ApplicationUser.LastName}") </td>
+                            <td> @($"{order.AddressLine}, {order.City}, {order.Province}") </td>
+                        }
+                        else if (order.Customer != null)
+                        {
+                            <td> @($"{order.Customer.FirstName} {order.Customer.LastName}") </td>
+                            <td> @($"{order.AddressLine}, {order.City}, {order.Province}") </td>
+                        }
+
+                        <td class="text-center"> @order.PaymentMode</td>
+                        <td class="text-center">
+                            @if (order.ApplicationUser != null)
+                            {
+                                totalToPay = Convert.ToDouble(order.DeliveryFee) + order.OrderTotal;
+                                @totalToPay.ToString("C", new CultureInfo("en-PH"))
+                            }
+                            else
+                            {
+                                @order.OrderTotal.ToString("C", new CultureInfo("en-PH"))
+                            }
+                        </td>
+                        <td class="text-center"> @order.SalesChannel</td>
+                        <td class="text-center">
+                            @if (order.StoreName == "Addsome Business Corporation")
+                            {
+                                <text>Addsome</text>
+                            }
+                            else if (order.StoreName == "Ahead Biz Computers")
+                            {
+                                <text>Ahead Biz</text>
+                            }
+                            else
+                            {
+                                @order.StoreName
+                            }
+                        </td>
+                        <td class="text-center"> @order.OrderStatus </td>
+                        <td class="text-center d-flex justify-content-around">
+                            <a class="a-style-none" href="OrderDetails?id=@order.Id">
+                                <i class="bi bi-eye-fill text-primary cursor-pointer" title="Process" tabindex="0"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                @for (var i = 0; i < 5; i++)
+                {
+                    <tr>
+                        <th scope="row"> - </th>
+                        <td> - </td>
+                        <td class="text-start"> - </td>
+                        <td class="text-start"> - </td>
+                        <td class="text-center"> - </td>
+                        <td class="text-center"> - </td>
+                        <td class="text-center"> - </td>
+                        <td class="text-center"> - </td>
+                        <td class="text-center"> - </td>
+                        <td class="text-center"> - </td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+</div>

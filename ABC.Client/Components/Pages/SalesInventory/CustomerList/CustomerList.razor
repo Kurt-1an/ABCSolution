@@ -1,0 +1,65 @@
+@using ABC.Shared.Models
+@using Layout
+@page "/CustomerList"
+@layout AdminLayout
+
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Customers List</PageTitle>
+
+<section class="container pt-2 pb-5">
+    <div class="row pb-3">
+        <!-- Title -->
+        <div class="col-8 text-start mb-3 mb-sm-0">
+            <h1>Customers List</h1>
+        </div>
+        <div class="col-4">
+            <div class="input-group flex-nowrap">
+                <input type="text" class="form-control h-100" @bind-value="CustomerSearchInput" @oninput="GetCustomerList" aria-label="Search Customer" placeholder="Search a customer..." />
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <table class="table table-hover table-sm mt-3">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name of the Customer</th>
+                <th scope="col">Contact Number</th>
+                <th scope="col">Email Address</th>
+                <th scope="col">Billing Address</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Customers.Count > 0)
+            {
+                var counter = 1;
+                foreach (var customer in Customers)
+                {
+                    <tr>
+                        <td>@counter</td> <!-- Display the counter value -->
+                        <td>@($"{customer.FirstName} {" "} {customer.LastName}")</td>
+                        <td>@customer.ContactNumber</td>
+                        <td>@customer.EmailAddress</td>
+                        <td>@($"{customer.ApSuUn ?? ""}, {customer.StreetorSubd ?? ""}, {customer.Barangay ?? ""}, {customer.City}, {customer.Province}, {customer.ZipCode}")</td>
+                        <td class="text-center d-flex justify-content-around">
+                            <a href="CustomerUpsert?id=@customer.Id" class="a-style-none">
+                                <i class="bi bi-eye-fill text-primary cursor-pointer" title="View" tabindex="0"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                    counter++;
+                }
+            }
+        </tbody>
+    </table>
+
+</section>
+
+<script>
+    $("#btngenerate").attr("href", `/Admin/Customer/GeneratePdf`);
+</script>

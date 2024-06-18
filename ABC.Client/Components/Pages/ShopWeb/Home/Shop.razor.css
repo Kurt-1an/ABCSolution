@@ -1,0 +1,46 @@
+﻿.FooterminHeight {
+    min-height: calc(100vh - 395px);
+}
+
+h3, p {
+    color: var(--maincolor-darkblue--);
+    text-align: center;
+}
+
+.card {
+    width: 100%;
+}
+
+    .card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+
+.card-img-top {
+    padding: 1rem;
+    width: 350px;
+    height: 200px;
+}
+
+.btn {
+    background-color: var(--maincolor-darkblue--);
+    color: #ffffff;
+}
+
+    .btn:hover {
+        background-color: var(--maincolor-darkblue--);
+        color: #ffffff;
+    }
+
+.input-group {
+    display: flex;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    padding-inline: 2rem 2rem;
+    justify-content: center;
+}
+
+    .input-group #searchLabel {
+        color: var(--maincolor-darkblue--);
+        font-weight: bold;
+    }

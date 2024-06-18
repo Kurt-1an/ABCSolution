@@ -1,0 +1,156 @@
+﻿@page "/Dashboard"
+
+@using ABC.Shared.Models
+@using Layout
+@using System.Globalization
+@layout AdminLayout
+
+
+<PageTitle>ABC - Dashboard</PageTitle>
+
+<div class="container min-height">
+    <div class="row firstPart">
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h1>
+                        <b>@totalcustomers</b>
+                    </h1>
+
+                    <p>No. of Customers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h1>
+                        <b>@unprocessedOrders</b>
+                    </h1>
+                    <p>Orders to Process</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h1>
+                        <b>@ordersoutfordelivery</b>
+                    </h1>
+                    <p>Orders to Deliver</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h1>
+                        <b>@cancelledOrders</b>
+                    </h1>
+                    <p>Cancelled Orders</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row secondPart">
+        <div class="col-12">
+            <div class="border p-3 container shadow">
+                <!--Title-->
+                <div>
+                    <h4 class="col-3" style="color: #223442;"><b>Inventory </b> </h4>
+                    <hr />
+                </div>
+
+                <div class="row col-12 mx-auto py-2">
+                    <div class="inventorybox">
+                        <h1>
+                            @stockAddsome
+                        </h1>
+                        <h6 class="text-success">Addsome Total Stock</h6>
+                    </div>
+                    <div class="inventorybox">
+                        <h1>
+                            @lowstockAddsome
+                        </h1>
+                        <h6 class="text-warning">Low Stock (Addsome)</h6>
+                    </div>
+                    <div class="inventorybox">
+                        <h1>
+                            @outofstockAddsome
+                        </h1>
+                        <h6 class="text-danger">Out of Stock (Addsome)</h6>
+                    </div>
+                </div>
+
+                <div class="row col-12 mx-auto py-2">
+                    <div class="inventorybox">
+                        <h1>
+                            @stockAhead
+                        </h1>
+                        <h6 class="text-success">Ahead Total Stock</h6>
+                    </div>
+                    <div class="inventorybox">
+                        <h1>
+                            @lowstockAhead
+                        </h1>
+                        <h6 class="text-warning">Low Stock (Ahead)</h6>
+                    </div>
+                    <div class="inventorybox">
+                        <h1>
+                            @outofstockAhead
+                        </h1>
+                        <h6 class="text-danger">Out of Stock (Ahead)</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row thirdPart ">
+        <div>
+            <div class="border p-3 container shadow">
+                <!-- Title -->
+                <div class="pb-2">
+                    <h4 style="color: #223442;"><b>Best Selling Items</b></h4>
+                    <hr />
+                </div>
+                <table class="table table-hover scrollable-table">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Product Name</th>
+                            <th>Retail Price</th>
+                            <th>Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Products != null && Products.Any())
+                        {
+                            foreach (var orderDetail in Products.Take(10))
+                            {
+                                <tr>
+                                    <td>@orderDetail.Product.SKU</td>
+                                    <td>@orderDetail.Product.productName</td>
+                                    <td>@orderDetail.Product.RetailPrice.ToString("C", new CultureInfo("en-PH"))</td>
+                                    <td>@orderDetail.Count</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="//cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+<script src="/js/dashboard.js"></script>
+
+

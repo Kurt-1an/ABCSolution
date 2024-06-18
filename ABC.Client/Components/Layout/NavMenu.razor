@@ -1,0 +1,117 @@
+﻿@implements IDisposable
+@using ABC.Client.Components.SharedComponents;
+@using Microsoft.AspNetCore.Http
+@using ABC.Shared.Utility;
+@using ABC.Shared.Services;
+@using ABC.Shared.Models.ViewModels;
+@using ABC.Client.Data;
+
+@inject NavigationManager NavigationManager
+@inject ShoppingCartService_SQL shoppingCartService_SQL
+@inject ApplicationDbContext applicationDbContext
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark" aria-label="Fourth navbar example">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="#"><BrandLogo /></a>
+
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarsExample04">
+
+			<ul class="navbar-nav me-auto mb-2 mb-md-0">
+
+				<li class="nav-item">
+					<NavLink class="nav-link" href="/">
+						Home
+					</NavLink>
+				</li>
+
+				<li class="nav-item">
+					<NavLink class="nav-link" href="About">
+						About
+					</NavLink>
+				</li>
+
+				<li class="nav-item">
+					<NavLink class="nav-link" href="Shop">
+						Shop
+					</NavLink>
+				</li>
+			</ul>
+
+
+			<AuthorizeView>
+				<Authorized>
+					<AuthorizeView Roles="Customer" Context="Context">
+						<div class="nav-item px-3 w-10 h-10">
+							<NavLink class="nav-link text-white position-relative" href="CartIndex">
+								<span class="bi bi-cart2" aria-hidden="true"></span>
+								<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+									@if (@CartItemCount > 0)
+									{
+										@CartItemCount
+									}
+								</span>
+							</NavLink>
+						</div>
+					</AuthorizeView>
+
+					<!-- Admin at Employee -->
+					<AuthorizeView Roles="Admin, Manager, Employee" Context="innerContext">
+						<div class="nav-item px-3 w-10 h-10">
+							<NavLink class="nav-link text-white" href="Dashboard" data-enhance-nav="false">
+								<i class="bi bi-person-fill-gear fs-4"></i>
+							</NavLink>
+						</div>
+					</AuthorizeView>
+
+					<!-- All users -->
+					<div class="nav-item px-3">
+						<div class="dropdown">
+							<a class="nav-link dropdown-toggle text-white" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="bi bi-person-circle fs-5"></i> @context.User.Identity?.Name &nbsp;
+							</a>
+
+							<div class="dropdown-menu" aria-labelledby="userDropdown">
+
+								<a class="dropdown-item" href="Account/Manage">My Account</a>
+								<AuthorizeView Roles="Customer" Context="Context">
+									<a class="dropdown-item" href="/MyOrders">My Orders</a>
+								</AuthorizeView>
+
+								<AuthorizeView Roles="Admin" Context="innerContext">
+									<a class="dropdown-item" href="/Account/Register">Add Employee</a>
+								</AuthorizeView>
+
+								<div class="dropdown-divider"></div>
+								<form action="Account/Logout" method="post">
+									<AntiforgeryToken />
+									<input type="hidden" name="ReturnUrl" value="@Logout" />
+									<button type="submit" class="dropdown-item">
+										Logout
+									</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</Authorized>
+
+				<NotAuthorized>
+					<div class="nav-item px-3">
+						<NavLink class="nav-link text-white" href="Account/Register">
+							<span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
+						</NavLink>
+					</div>
+					<div class="nav-item px-3">
+						<NavLink class="nav-link text-white" href="Account/Login">
+							<span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+						</NavLink>
+					</div>
+				</NotAuthorized>
+
+			</AuthorizeView>
+		</div>
+	</div>
+</nav>

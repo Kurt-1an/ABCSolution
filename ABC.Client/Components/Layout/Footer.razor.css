@@ -1,0 +1,26 @@
+﻿.footer {
+    background-color: var(--maincolor-darkblue--);
+}
+
+.title {
+    letter-spacing: 2px;
+    color: #968C37;
+    font-weight: bold;
+}
+
+.copyright {
+    background-color: #1E2E3B;
+    color: #968C37;
+}
+
+
+.stacked-spans {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .img-fluid {
+        width: 50% !important;
+        margin-bottom: 1em;
+    }
+}

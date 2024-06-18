@@ -1,0 +1,170 @@
+﻿@using ABC.Shared.Models
+@using ABC.Shared.Utility
+@using Layout
+@using System.Globalization
+@page "/SalesDetails"
+@layout AdminLayout
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Sales Details</PageTitle>
+
+<input asp-for="OrderHeader.Id" hidden />
+<br />
+<div class="container mb-5">
+	<div class="row pb-2">
+		<!-- Title -->
+		<div class="title col-lg-8 col-sm-12 ">
+			<h1>Sales Details</h1>
+		</div>
+		<div class="badgeStatus col-lg-4 col-sm-12">
+			<h2>
+				<span class="badge @(orderHeader.OrderStatus == "Completed" ? "bg-success" :
+										orderHeader.OrderStatus == "Cancelled" ? "bg-danger" :
+										orderHeader.OrderStatus == "Refunded" ? "bg-secondary" :
+										"bg-secondary")">
+					@orderHeader.OrderStatus
+				</span>
+			</h2>
+		</div>
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="/SalesRecord">Sales Record</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Sales Details</li>
+			</ol>
+		</nav>
+	</div>
+
+
+	<EditForm Model="orderHeader" OnValidSubmit="SaveOrder">
+		<DataAnnotationsValidator />
+		<div class="card">
+			<div class="card-body">
+				<div class="container rounded">
+					<div class="row">
+						<div class="col-12 col-lg-6 pb-4">
+							<div class="row">
+								<h3>
+									Delivery Details:
+								</h3>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">Name</div>
+								<div class="col-9">
+									<input readonly type="text" @bind-value="firstName" class="form-control" />
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">Email Address</div>
+								<div class="col-9">
+									<input @bind-value="email" readonly type="text" class="form-control" />
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">Phone</div>
+								<div class="col-9">
+									<input readonly @bind-value="phoneNumber" type="text" class="form-control" />
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">Address</div>
+								<div class="col-9">
+									<input readonly @bind-value="lineAddress" type="text" class="form-control" />
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">Province</div>
+								<div class="col-9">
+									<input readonly @bind-value="province" type="text" class="form-control" />
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">Postal Code</div>
+								<div class="col-9">
+									<input readonly @bind-value="zipCode" type="text" class="form-control" />
+								</div>
+							</div>
+
+							<div class="row my-1">
+								<div class="col-3">Order Date</div>
+								<div class="col-9">
+									<input @bind-value="orderHeader.OrderDate" readonly type="text" class="form-control" />
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">Delivery Date</div>
+								<div class="col-9">
+									<input @bind-value="orderHeader.ShippingDate" readonly type="text" class="form-control" />
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">Payment Mode</div>
+								<div class="col-9">
+									<input @bind-value="orderHeader.PaymentMode" readonly type="text" class="form-control" />
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">Payment Status</div>
+								<div class="col-9">
+									<input @bind-value="orderHeader.PaymentStatus" readonly type="text" class="form-control" />
+								</div>
+							</div>
+
+							@if ((orderHeader.OrderStatus == SD.StatusCancelled) || (orderHeader.OrderStatus == SD.StatusCompleted))
+							{
+								<div class="row my-1">
+									<div class="col-3">Delivery Personnel</div>
+									<div class="col-9">
+										<input @bind-value="orderHeader.Carrier" id="carrier" readonly type="text" class="form-control" />
+									</div>
+								</div>
+							}
+						</div>
+						<div class="col-12 col-lg-5 offset-lg-1">
+							<div class="row">
+								<h3>
+									Orders:
+								</h3>
+							</div>
+							<div class="row my-1">
+								@foreach (var item in orderDetailsList)
+								{
+									<div class="list-group">
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												<div class="row">
+													<div class="col-3">
+														<img src="@item.Product.ImageUrl" class="rounded" width="100%" />
+													</div>
+													<div class="col-5">
+														<h6 class="my-0">@item.Product.productName</h6>
+														<small class="text-muted">Quantity: @item.Count</small>
+													</div>
+													<div class="col-4 text-end">
+														<span class="text-muted"><b>@("\u20B1" + (item.Product.RetailPrice * item.Count).ToString("#,###.00"))</b></span>
+													</div>
+												</div>
+											</li>
+									</div>
+								}
+							</div>
+							<div class="row text-end">
+								@if (orderHeader.ApplicationUser != null)
+								{
+									<h6 class="my-2">Delivery Fee: @orderHeader.DeliveryFee.ToString("C", new CultureInfo("en-PH"))</h6>
+									<h6 class="my-2">Order Total: @orderHeader.OrderTotal.ToString("C", new CultureInfo("en-PH"))</h6>
+									<h2 class="my-2">Total: @TotalToPay.ToString("C", new CultureInfo("en-PH"))</h2>
+								}
+								@if (orderHeader.ApplicationUser == null)
+								{
+									<h6 class="my-2">Applied Discount: @orderHeader.Discount.ToString("C", new CultureInfo("en-PH"))</h6>
+									<h6 class="my-2">Additional Charges: @charges.ToString("C", new CultureInfo("en-PH"))</h6>
+									<h6 class="my-2">Amount Tendered: @FormatCurrency(orderHeader.AmountTendered)</h6>
+									<h2>Total: @orderHeader.OrderTotal.ToString("C", new CultureInfo("en-PH"))</h2>
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</EditForm>
+</div>

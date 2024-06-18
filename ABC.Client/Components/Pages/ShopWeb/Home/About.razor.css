@@ -1,0 +1,19 @@
+﻿.FooterminHeight {
+    min-height: calc(100vh - 395px);
+}
+
+h1 {
+    color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+.About {
+    margin-top: 2em;
+    text-align: justify;
+}
+
+.visionMission {
+    margin-top: 3em;
+    margin-bottom: 6em;
+    text-align: justify;
+}

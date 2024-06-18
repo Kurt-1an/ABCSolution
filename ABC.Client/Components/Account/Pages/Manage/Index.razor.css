@@ -1,0 +1,23 @@
+﻿.FooterminHeight {
+    min-height: calc(100vh - 395px);
+}
+
+h2 {
+    color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+.btn {
+    border-radius: 30px;
+    background-color: white;
+    color: var(--maincolor-darkblue--);
+    border-color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+    .btn:hover {
+        border-radius: 30px;
+        background-color: var(--maincolor-darkblue--);
+        color: white;
+        font-weight: bold;
+    }

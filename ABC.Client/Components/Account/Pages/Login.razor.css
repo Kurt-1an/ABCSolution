@@ -1,0 +1,38 @@
+﻿.container {
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.login h1 {
+    color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+
+
+.display {
+    color: #ffffff;
+    background-color: #223442;
+}
+
+    .display a {
+        color: #ffffff;
+    }
+
+.btn {
+    border-radius: 30px;
+    background-color: white;
+    color: #223442;
+    border-color: #223442;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+    .btn:hover {
+        border-radius: 30px;
+        background-color: #223442;
+        color: white;
+        font-weight: bold;
+    }
+

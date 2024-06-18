@@ -1,0 +1,60 @@
+﻿@using ABC.Shared.Models
+@using Layout
+@page "/OnlineCustomers"
+@layout AdminLayout
+
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Online Customers</PageTitle>
+
+<section class="container pt-2 pb-5">
+    <div class="row pb-3">
+        <!-- Title -->
+        <div class="col-8">
+            <h1>Online Customers</h1>
+        </div>
+        <div class="col-4">
+            <div class="input-group flex-nowrap">
+                <input type="text" class="form-control h-100" @bind-value="CustomerSearchInput" @oninput="GetOnlineCustomerList" aria-label="Search Customer" placeholder="Search a customer..." />
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <table class="table table-hover table-sm mt-3">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name of the Customer</th>
+                <th scope="col">Contact Number</th>
+                <th scope="col">Email Address</th>
+                <th scope="col">Billing Address</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (OnlineCustomers.Count > 0)
+            {
+                var counter = 1;
+                foreach (var onlineCust in OnlineCustomers)
+                {
+                    <tr>
+                        <td>@counter</td> <!-- Display the counter value -->
+                        <td>@($"{onlineCust.FirstName} {" "} {onlineCust.LastName}")</td>
+                        <td>@onlineCust.PhoneNumber</td>
+                        <td>@onlineCust.Email</td>
+                        <td>@($"{onlineCust.Address ?? ""}, {onlineCust.City ?? ""}, {onlineCust.Province ?? ""}, {onlineCust.PostalCode}")</td>
+                        <td class="text-center d-flex justify-content-around">
+                            <a href="OnlineCustomerDetail?id=@onlineCust.Id" class="a-style-none">
+                                <i class="bi bi-eye-fill text-primary cursor-pointer" title="View" tabindex="0"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                    counter++;
+                }
+            }
+        </tbody>
+    </table>
+</section>

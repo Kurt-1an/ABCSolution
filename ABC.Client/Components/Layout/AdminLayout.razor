@@ -1,0 +1,23 @@
+﻿@inherits LayoutComponentBase
+
+<AuthorizeView Roles="Admin, Employee, Manager" Context="innerContext" >
+    <Authorized>
+        <AdminNavMenu />
+
+        <main>
+            <article class="px-2">
+                @Body
+            </article>
+        </main>
+    </Authorized>
+    <NotAuthorized>
+        <div class="text-center">
+            <h3 class="text-danger">You are not authorized to view this content.</h3>
+            <h5>To access this section, please <a href="/Account/Login">login</a> an account with an access to this section of the application </h5>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+

@@ -1,0 +1,132 @@
+@using ABC.Shared.Models
+@using Layout
+@page "/SupplierList"
+@layout AdminLayout
+@rendermode InteractiveServer
+
+
+<PageTitle>ABC - Suppliers List</PageTitle>
+
+<section class="container pt-2 pb-5">
+    <div class="row pb-4">
+        <!-- Title -->
+        <div class="col-lg-8 col-sm-12 text-start mb-3 mb-sm-0">
+            <h1>Suppliers List</h1>
+        </div>
+
+        <!-- Export Button -->
+        <div class="col-lg-4 col-sm-4 text-end mb-3 mb-sm-0">
+            <a class="btn btn-primary" role="button" href="SupplierUpsert">
+                Add Supplier
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-4">
+            <div class="input-group flex-nowrap">
+                <input type="text" class="form-control h-100" @bind-value="SupplierSearchInput" @oninput="GetSuppliersList" aria-label="Search Supplier" placeholder="Search a supplier..." />
+            </div>
+        </div>
+    </div>
+
+    <!-- Supplier Table -->
+    <table class="table table-hover table-sm mt-3">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Company Name</th>
+                <th scope="col">Contact Number</th>
+                <th scope="col">Email Address</th>
+                <th scope="col">Address</th>
+                <th scope="col">Status</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Suppliers.Count > 0)
+            {
+                foreach (var supplier in Suppliers)
+                {
+                    <tr>
+                        <td>@supplier.Id</td>
+                        <td>@supplier.supplierCompanyName</td>
+                        <td>@supplier.supplierContactNumber</td>
+                        <td>@supplier.supplierEmail</td>
+                        <td>@($"{supplier.supplierUnitNumber ?? ""}, {supplier.supplierStreetSubdv ?? ""}, {supplier.supplierBarangay ?? ""}, {supplier.supplierCity}, {supplier.supplierProvince}, {supplier.supplierZipCode}")</td>
+                        <td>@supplier.supplierStatus</td>
+                        <td class="text-center d-flex justify-content-around">
+                            
+                            @if (supplier.supplierStatus == "Inactive")
+                            {
+                                <i class="bi bi-arrow-repeat text-success cursor-pointer" title="Reactivate"
+                                   tabindex="0" data-bs-toggle="modal"
+                                   data-bs-target="#reactivateItem" @onclick='() => PopulateSupplierDetails(supplier.Id)'>
+                                </i>
+                            }
+                            else
+                            {
+                                <a href="SupplierUpsert?id=@supplier.Id" class="a-style-none">
+                                    <i class="bi bi-pencil-square text-primary cursor-pointer" title="Edit" tabindex="0"></i>
+                                </a>
+                                <i class="bi bi-x-square text-danger cursor-pointer" title="Archive"
+                                   tabindex="0" data-bs-toggle="modal"
+                                   data-bs-target="#archiveItem" @onclick='() => PopulateSupplierDetails(supplier.Id)'>
+                                </i>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <!-- Improved and Styled Modal -->
+    <div class="modal fade mt-4" id="archiveItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header text-dark">
+                    <h5 class="modal-title" id="exampleModalLabel">Archive Supplier</h5>
+                    <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <span class="fw-bold">ID:</span> @selectedSupplier.Id
+                    </div>
+                    <div>
+                        <span class="fw-bold">Name:</span> @selectedSupplier.supplierCompanyName
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick='Archive' data-bs-dismiss="modal">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade mt-4" id="reactivateItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header text-dark">
+                    <h5 class="modal-title" id="exampleModalLabel">Reactivate Supplier</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <span class="fw-bold">ID:</span> @selectedSupplier.Id
+                    </div>
+                    <div>
+                        <span class="fw-bold">Name:</span> @selectedSupplier.supplierCompanyName
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" @onclick='Reactivate' data-bs-dismiss="modal">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

@@ -1,0 +1,323 @@
+@using ABC.Shared.Models
+@using Layout
+@using ABC.Client.Components.SharedComponents
+
+@page "/ProductUpsert"
+
+@layout AdminLayout
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Product</PageTitle>
+
+@* Notice *@
+<section id="alert" class="@(showNotice ? "" : "d-none")">
+	<NoticeComponent Notice="@Notice" />
+</section>
+
+<section class="container mb-4">
+	<EditForm Model="SelectedProduct" OnValidSubmit="SaveProduct" enctype="multipart/form-data">
+		<DataAnnotationsValidator />
+		<ValidationSummary class="text-danger" role="alert" />
+		<InputNumber @bind-Value="SelectedProduct.Id" hidden></InputNumber>
+
+		<!--New Product-->
+		<div class="row pt-2 pb-1" id="topbar">
+			<!-- Title -->
+			<div class="col-lg-8 col-sm-12 text-start mb-3 mb-sm-0">
+				<h1>@(SelectedProduct.Id != 0 ? "Update" : "Add") Product</h1>
+			</div>
+
+			<!-- Save Button -->
+			<div class="col-lg-4 col-sm-4 text-end mb-3 mb-sm-0">
+
+				@if (SelectedProduct.Id != 0)
+				{
+					<button class="btn btn-success" data-bs-toggle="modal" type="button" data-bs-target="#UpsertItem">
+						<i class="bi bi-floppy"></i> Update
+					</button>
+					<button class="btn btn-danger" type="button" href="ProductList" @onclick="() => CancelAction()">
+						<i class="bi bi-floppy"></i> Cancel
+					</button>
+				}
+				else
+				{
+					<button class="btn btn-success" type="submit">
+						<i class="bi bi-floppy"></i> Save
+					</button>
+					<button class="btn btn-danger" type="button" @onclick="() => CancelAction()">
+						<i class="bi bi-floppy"></i> Cancel
+					</button>
+				}
+			</div>
+		</div>
+
+		<!--Breadcrumb-->
+		<div class="row pb-2">
+			<nav aria-label="breadcrumb">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="ProductList">Product List</a></li>
+					<li class="breadcrumb-item active" aria-current="page">@(SelectedProduct.Id != 0 ? "Update" :
+						"Create") List</li>
+				</ol>
+			</nav>
+		</div>
+
+		<!--Product Images-->
+		<div class="row pb-4">
+			<div class="col-12">
+				<div class="border p-3 container shadow">
+					<!--Title-->
+					<div class="row pb-2">
+						<h4 style="color: #223442;"><b>Product Image</b></h4>
+						<hr />
+					</div>
+
+					<!--Product Images-->
+
+					<div class="row">
+						<div class="col-4">
+							<label id="formFileone" class="form-label mt-2"><strong>Product Image</strong> <br /> <span
+									class="text-muted">Upload new image to remove the current image</span> </label>
+							<InputFile OnChange="HandleFileSelected" />
+						</div>
+						<div class="col-8">
+							@if (!string.IsNullOrEmpty(previewImageData))
+							{
+								<img src="@previewImageData" alt="Preview" class="rounded" width="30%"
+									style="border-radius: 5px; border: 1px solid #bbb9b9;">
+							}
+							else if (!string.IsNullOrEmpty(SelectedProduct.ImageUrl))
+							{
+								<img src="@SelectedProduct.ImageUrl" alt="Image" class="rounded" width="30%"
+									style="border-radius: 5px; border: 1px solid #bbb9b9;">
+							}
+							else
+							{
+								<p>No image available</p>
+							}
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!--Product Information-->
+		<div class="row pb-3">
+			<div class="col-12">
+				<div class="border p-3 container shadow">
+					<!--Title-->
+					<div class="row pb-2">
+						<h4 style="color: #223442;"><b>Product Information</b></h4>
+						<hr />
+					</div>
+					
+					<div class="row">
+						<div class="col-6"> <!--SKU-->
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="SKU">SKU</label>
+								<input @bind-value="SelectedProduct.SKU" type="text" class="form-control"
+									   aria-describedby="SKU">
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="productName">Product Name</label>
+								<input @bind-value="SelectedProduct.productName" type="text" class="form-control"
+									   aria-describedby="productName">
+							</div>
+						</div>
+					</div>
+
+					<!--Product Name-->
+					<div class="row">
+						<div class="col-6">
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="Brand">Brand </label>
+								<input @bind-value="SelectedProduct.Brand" type="text" class="form-control" aria-describedby="productName">
+							</div>
+						</div>
+						<div class="col-3">
+							<span asp-validation-for="Product.CostPrice" class="text-danger"></span>
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="CostPrice">Cost Price</label>
+								<input @bind-value="SelectedProduct.CostPrice" class="form-control"aria-describedby="CostPrice">
+							</div>
+						</div>
+						<div class="col-3">
+							<span asp-validation-for="Product.RetailPrice" class="text-danger"></span>
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="RetailPrice">Retail Price</label>
+								<input @bind-value="SelectedProduct.RetailPrice" class="form-control"aria-describedby="RetailPrice">
+							</div>
+						</div>
+					</div>
+
+					<!--Category-->
+					<div class="row">
+						<div class="col-6">
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="Category">Category </label>
+								<select @bind="SelectedProduct.CategoryId" class="form-select">
+									<option selected disabled>Select category</option>
+									@foreach (var category in CategoryList)
+									{
+										<option value="@category.Id">@category.Name</option>
+									}
+								</select>
+							</div>
+						</div>
+
+						<div class="col-6">
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="Supplier">Supplier </label>
+								<select @bind="SelectedProduct.SupplierId" class="form-select">
+									<option selected disabled>Select supplier</option>
+									@foreach (var supplier in SupplierList)
+									{
+										<option value="@supplier.Id">@supplier.supplierCompanyName</option>
+									}
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<!--Warranty-->
+						<div class="col-6">
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="productName">Warranty Type:</label>
+								<input @bind-value="SelectedProduct.WarrantyType" class="form-control"
+									aria-describedby="Warranty Type">
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="productName">Duration:</label>
+								<input @bind-value="SelectedProduct.Duration" class="form-control"
+									aria-describedby="Warranty Duration">
+							</div>
+						</div>
+					</div>
+					<!--Description-->
+					<div class="row">
+						<div class="input-group mb-3">
+							<label class="input-group-text">Description</label>
+							<InputTextArea @bind-Value="SelectedProduct.Description" class="form-control" aria-describedby="Description" required></InputTextArea>
+							<ValidationMessage For="@(() => SelectedProduct.Description)" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row pt-2 pb-3">
+			<div class="col-12 my-auto">
+				<div class="border p-3 container shadow">
+					<!--Title-->
+					<div class="row pb-2">
+						<h4 style="color: #223442;"><b>Inventory</b></h4>
+						<hr />
+					</div>
+
+					<!--Stock Quantity-->
+					<div class="row">
+						@if (SelectedProduct.Id == 0)
+						{
+							<div class="col-6">
+								@* <span asp-validation-for="Product.StockQuantity" class="text-danger"></span> *@
+								<div class="input-group mb-3">
+									<label class="input-group-text" id="StockQuantity1">Addsome Stock Qty</label>
+									<input @bind-value="StockPerStoreInput.Store1StockQty" class="form-control" aria-describedby="StockQuantity1">
+								</div>
+							</div>
+							<div class="col-6">
+
+								<div class="input-group mb-3">
+									<label class="input-group-text" id="StockQuantity2">Ahead Stock Qty</label>
+									<input @bind-value="StockPerStoreInput.Store2StockQty" class="form-control" aria-describedby="StockQuantity2">
+								</div>
+							</div>
+						} else
+						{
+							<div class="col-6">
+								@* <span asp-validation-for="Product.StockQuantity" class="text-danger"></span> *@
+								<div class="input-group mb-3">
+									<label class="input-group-text" id="StockQuantity1">Addsome Stock Qty</label>
+									<input @bind-value="SelectedProduct.StockPerStore.Store1StockQty" class="form-control" aria-describedby="StockQuantity1">
+								</div>
+							</div>
+							<div class="col-6">
+
+								<div class="input-group mb-3">
+									<label class="input-group-text" id="StockQuantity2">Ahead Stock Qty</label>
+									<input @bind-value="SelectedProduct.StockPerStore.Store2StockQty" class="form-control" aria-describedby="StockQuantity2">
+								</div>
+							</div>
+						}
+					</div>
+
+					<div class="row">
+						@if (SelectedProduct.Id == 0)
+						{
+							<div class="col-6">
+								<div class="input-group mb-3">
+									<label class="input-group-text" id="MinimumStockQuantity1">Min. Stock Qty for Addsome</label>
+									<input @bind-value="StockPerStoreInput.MinimumStore1StockQty" class="form-control" aria-describedby="MinimumStockQuantity1">
+								</div>
+							</div>
+							<div class="col-6">
+
+								<div class="input-group mb-3">
+									<label class="input-group-text" id="MinimumStockQuantity2">Min. Stock Qty for Ahead</label>
+									<input @bind-value="StockPerStoreInput.MinimumStore2StockQty" class="form-control" aria-describedby="MinimumStockQuantity2">
+								</div>
+							</div>
+						}
+						else
+						{
+							<div class="col-6">
+								<div class="input-group mb-3">
+									<label class="input-group-text" id="minimum1">Min. Stock Qty for Addsome</label>
+									<input @bind-value="SelectedProduct.StockPerStore.MinimumStore1StockQty" class="form-control" aria-describedby="StockQuantity1">
+								</div>
+							</div>
+							<div class="col-6">
+
+								<div class="input-group mb-3">
+									<label class="input-group-text" id="minimum2">Min. Stock Qty for Ahead</label>
+									<input @bind-value="SelectedProduct.StockPerStore.MinimumStore2StockQty" class="form-control" aria-describedby="StockQuantity2">
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</EditForm>
+</section>
+
+<!-- Improved and Styled Modal -->
+<div class="modal fade mt-4" id="UpsertItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header text-dark">
+				<h5 class="modal-title" id="exampleModalLabel">@(SelectedProduct.Id != 0 ? "Update" : "Create") Product
+				</h5>
+				<button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+
+			<div class="modal-body">
+				<div class="mb-3">
+					<span class="fw-bold">Are you sure you want to @(SelectedProduct.Id != 0 ? "Update" : "Create") this
+						product?</span>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				<button class="btn btn-danger" @onclick="SaveProduct" type="button"
+					data-bs-dismiss="modal">Confirm</button>
+			</div>
+		</div>
+	</div>
+</div>

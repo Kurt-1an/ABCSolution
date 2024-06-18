@@ -1,0 +1,152 @@
+@using ABC.Shared.Models
+@using System.Globalization;
+@using Layout
+
+@page "/InventoryReport"
+@layout AdminLayout
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Inventory Report</PageTitle>
+
+<AuthorizeView Roles="Admin" Context="innerContext">
+    <section class="container pt-2 pb-5">
+        <!--TITLE-->
+        <div class="row pb-1">
+            <div class="col-8">
+                <h1>Inventory Report</h1>
+            </div>
+            <!-- Export Button -->
+            <div class="col-4 button hideWhenPrint">
+                <a class="btn btn-success" id="btngenerate" @onclick="Print">
+                    <i class="bi bi-box-arrow-up"></i> Export
+                </a>
+            </div>
+        </div>
+        <!--Breadcrumb-->
+        <div class="row">
+            <div class="col-7 hideWhenPrint">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="SalesReport">Sales Report</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Inventory Report</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="col-5">
+                <div class="row date">
+                    <div class="col-5">
+                        <div class="form-group">
+                            <label for="startDate"><b>Start Date</b></label>
+                            <InputDate class="form-control" id="startDate" @bind-Value="startDate" />
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group">
+                            <label for="endDate"><b>End Date</b></label>
+                            <InputDate class="form-control" id="endDate" @bind-Value="endDate" />
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="col-2 hideWhenPrint">
+                            <button type="submit" class="btn btn-secondary" disabled>Apply</button>
+                        </div>
+                        <div class="text-danger">@errorMessage</div>
+                    }
+                    else
+                    {
+                        <div class="col-2 hideWhenPrint">
+                            <button type="submit" class="btn btn-primary" @onclick="ApplyDate">Apply</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row first">
+            <div class="smallbox">
+                <div class="row">
+                    <h5>Total Inventory Value</h5>
+                    <h1>@totalInventoryValue.ToString("C", new CultureInfo("en-PH"))</h1>
+                    <hr />
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Addsome Business</h6>
+                        <h5>@AddsomeInventoryValue.ToString("C", new CultureInfo("en-PH"))</h5>
+                    </div>
+                    <div class="col-6">
+                        <h6>Ahead Biz</h6>
+                        <h5>@AheadBizInventoryValue.ToString("C", new CultureInfo("en-PH"))</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="smallbox">
+                <div class="row">
+                    <h5>Total Available Stock</h5>
+                    <h1>@totalAvailableQuantity</h1>
+                    <hr />
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Addsome Business</h6>
+                        <h5>@AddsomeAvailableQuantity</h5>
+                    </div>
+                    <div class="col-6">
+                        <h6>Ahead Biz</h6>
+                        <h5>@AheadAvailableQuantity</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row second">
+            <div class="row pb-2">
+                <h3>Products in Inventory</h3>
+            </div>
+            <hr />
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Product ID</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Cost Price</th>
+                        <th scope="col">Retail Price</th>
+                        <th scope="col" class="text-center">Addsome</th>
+                        <th scope="col" class="text-center">Ahead</th>
+                        <th scope="col" class="text-center">Total Stock</th>
+                        <th scope="col" class="text-center">Total Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in productsList)
+                    {
+                        <tr>
+                            <td>@product.Id</td>
+                            <td>@product.productName</td>
+                            <td>@product.CostPrice.ToString("C", new CultureInfo("en-PH"))</td>
+                            <td>@product.RetailPrice.ToString("C", new CultureInfo("en-PH"))</td>
+                            <td class="text-center">@product.StockPerStore.Store1StockQty</td>
+                            <td class="text-center">@product.StockPerStore.Store2StockQty</td>
+                            <td class="text-center">@product.StockPerStore.TotalStocks</td>
+                            <td class="text-center">@FormatCurrency(product.CostPrice * product.StockPerStore.TotalStocks)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <script>
+        window.BlazorDownloadFile = (fileName, content) => {
+            const link = document.createElement('a');
+            link.href = 'data:application/pdf;base64,' + content;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+    </script>
+</AuthorizeView>
+

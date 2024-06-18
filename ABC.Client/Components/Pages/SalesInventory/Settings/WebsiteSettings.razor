@@ -1,0 +1,186 @@
+﻿@using ABC.Shared.Models
+@page "/WebSettings"
+
+@using Layout
+@layout AdminLayout
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Website Settings</PageTitle>
+
+<section class="container">
+	<div class="row">
+		<!-- Title -->
+		<div class="col-lg-8 col-sm-12">
+			<h1><b>Website</b></h1>
+		</div>
+	</div>
+
+	<section>
+		<!-- Accordion Item - About -->
+		<div class="accordion accordion-flush border shadow mb-3">
+			<h2 class="accordion-header" id="headingAbout">
+				<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAbout" aria-expanded="false" aria-controls="collapseAbout">
+					<h5>About</h5>
+				</button>
+			</h2>
+			<div id="collapseAbout" class="accordion-collapse collapse show" aria-labelledby="headingAbout" data-bs-parent="#accordionExample">
+				<div class="accordion-body">
+					@if (!isAboutEditing)
+					{
+						<span>@Content.About</span>
+
+						<br />
+						<button class="btn btn-primary mt-3" @onclick="StartAboutEditing">Edit</button>
+					}
+					else
+					{
+						<textarea @bind="Content.About" class="w-100"></textarea>
+						<button type="button" tabindex="0" data-bs-toggle="modal"
+								data-bs-target="#updateItem" class="btn btn-primary mt-3">
+							Save
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+	<section>
+		<!-- Accordion Item - Vision Mission -->
+		<div class="accordion accordion-flush border shadow mb-3">
+			<h2 class="accordion-header" id="headingAbout">
+				<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVisionMission" aria-expanded="false" aria-controls="collapseVisionMission">
+					<h5>Vision & Mission</h5>
+				</button>
+			</h2>
+			<div id="collapseVisionMission" class="accordion-collapse collapse show" aria-labelledby="headingVisionMission" data-bs-parent="#accordionExample">
+				<div class="accordion-body">
+					@if (!isVissionEditing)
+					{
+						<span>@Content.VissionMission</span>
+
+						<br />
+						<button class="btn btn-primary mt-3" @onclick="StartVisionEditing">Edit</button>
+					}
+					else
+					{
+						<textarea @bind="Content.VissionMission" class="w-100"></textarea>
+						<button type="button" tabindex="0" data-bs-toggle="modal"
+								data-bs-target="#updateItem" class="btn btn-primary mt-3">
+							Save
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+	<section>
+		<!-- Accordion Item - Privacy Policy -->
+		<div class="accordion accordion-flush border shadow mb-3">
+			<h2 class="accordion-header" id="headingPrivacy">
+				<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrivacy" aria-expanded="false" aria-controls="collapsePrivacy">
+					<h5>Privacy Policy</h5>
+				</button>
+			</h2>
+			<div id="collapsePrivacy" class="accordion-collapse collapse show" aria-labelledby="headingPrivacy" data-bs-parent="#accordionExample">
+				<div class="accordion-body">
+					@if (!isPrivacyEditing)
+					{
+						<span>@Content.Privacy</span>
+
+						<br />
+						<button class="btn btn-primary mt-3" @onclick="StartPrivacyEditing">Edit</button>
+					}
+					else
+					{
+						<textarea @bind="Content.Privacy" class="w-100"></textarea>
+						<button type="button" tabindex="0" data-bs-toggle="modal"
+								data-bs-target="#updateItem" class="btn btn-primary mt-3">
+							Save
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+	<section>
+		<!-- Accordion Item - Terms of Use -->
+		<div class="accordion accordion-flush border shadow mb-3">
+			<h2 class="accordion-header" id="headingTerms">
+				<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTerms" aria-expanded="false" aria-controls="collapseTerms">
+					<h5>Terms of Use</h5>
+				</button>
+			</h2>
+			<div id="collapseTerms" class="accordion-collapse collapse show" aria-labelledby="headingTerms" data-bs-parent="#accordionExample">
+				<div class="accordion-body">
+					@if (!isTermsEditing)
+					{
+						<span>@Content.TermsPolicy</span>
+
+						<br />
+						<button class="btn btn-primary mt-3" @onclick="StartTermsEditing">Edit</button>
+					}
+					else
+					{
+						<textarea @bind="Content.TermsPolicy" class="w-100"></textarea>
+						<button type="button" tabindex="0" data-bs-toggle="modal"
+								data-bs-target="#updateItem" class="btn btn-primary mt-3">
+							Save
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+	<section>
+		<!-- Accordion Item - Return and Refund Process -->
+		<div class="accordion accordion-flush border shadow mb-3">
+			<h2 class="accordion-header" id="headingRefund">
+				<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRefund" aria-expanded="false" aria-controls="collapseRefund">
+					<h5>Return & Refund Process</h5>
+				</button>
+			</h2>
+			<div id="collapseRefund" class="accordion-collapse collapse show" aria-labelledby="headingRefund" data-bs-parent="#accordionExample">
+				<div class="accordion-body">
+					@if (!isReturnEditing)
+					{
+						<span>@Content.returnRefund</span>
+
+						<br />
+						<button class="btn btn-primary mt-3" @onclick="StartReturnEditing">Edit</button>
+					}
+					else
+					{
+						<textarea @bind="Content.returnRefund" class="w-100"></textarea>
+						<button type="button" tabindex="0" data-bs-toggle="modal"
+								data-bs-target="#updateItem" class="btn btn-primary mt-3">
+							Save
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+</section>
+
+<!-- Improved and Styled Modal -->
+<div class="modal fade mt-4" id="updateItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header text-dark">
+				<h5 class="modal-title" id="exampleModalLabel">Update Item</h5>
+				<button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div>
+					<span>Are you sure you want to update this field?</span>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-danger" @onclick='Update' data-bs-dismiss="modal">Confirm</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+

@@ -1,0 +1,21 @@
+@using ABC.Shared.Models
+@if (Notice.IsSuccess)
+{
+    <div class="text-13px alert alert-success shadow col-auto mx-auto text-center position-fixed"
+        id="incompleteProfileNotice-brokerList" role="alert">
+        <i class="bi bi-check-circle text-success me-2"></i> @Notice.Message
+    </div>
+}
+else
+{
+    <div class="text-13px alert alert-warning shadow col-auto mx-auto text-center position-fixed"
+        id="incompleteProfileNotice-brokerList" role="alert">
+        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> @Notice.Message
+    </div>
+}
+
+@code {
+    [Parameter]
+    public AddProductNotice Notice { get; set; } = new();
+
+}   

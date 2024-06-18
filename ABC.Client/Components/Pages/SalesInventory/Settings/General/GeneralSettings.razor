@@ -1,0 +1,91 @@
+﻿@using ABC.Shared.Models
+@using Layout
+@page "/GeneralSettings"
+@layout AdminLayout
+
+<PageTitle>ABC - General Setting</PageTitle>
+
+<AuthorizeView Roles="Admin" Context="innerContext">
+    <section class="container">
+        <div class="subContainer">
+            <div class="row pb-4">
+                <div class="col-lg-8 col-sm-12 text-start mb-3 mb-sm-0">
+                    <h2>Stores</h2>
+                </div>
+
+                <!-- Add Button -->
+                <div class="col-lg-4 col-sm-4 text-end mb-3 mb-sm-0">
+                    <a class="btn btn-primary" role="button">
+                        Add Store
+                    </a>
+                </div>
+            </div>
+
+            <table id="tblData" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Store Name</th>
+                        <th>Email Address</th>
+                        <th>Contact Number</th>
+                        <th>Address</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach(var store in StoresList)
+                    {
+                        <tr>
+                            <td>@store.Id</td>
+                            <td>@store.storeName</td>
+                            <td>@store.storeEmail</td>
+                            <td>@store.storeContactNumber</td>
+                            <td>@($"{store.storeUnitNumber}, {store.storeStreetSubdv}, {store.storeBarangay}, {store.storeCity}, {store.storeProvince}, {store.storeZipCode}")</td>
+                            <td class="text-center align-content-center">
+                                <a href="" class="a-style-none">
+                                    <i class="bi bi-pencil-square text-primary cursor-pointer" title="Edit" tabindex="0"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <section class="container">
+        <div class="subContainer">
+            <div class="row pb-4">
+                <div class="col-lg-8 col-sm-12 text-start mb-3 mb-sm-0">
+                    <h2>Delivery Fee</h2>
+                </div>
+
+                <!-- Add Button -->
+                <div class="col-lg-4 col-sm-4 text-end mb-3 mb-sm-0">
+                    <a class="btn btn-primary" role="button">
+                        Add Delivery Fee & Location
+                    </a>
+                </div>
+            </div>
+
+            <table id="tblData" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">City Name</th>
+                        <th scope="col">Delivery Fee</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</AuthorizeView>

@@ -1,0 +1,8 @@
+﻿.FooterminHeight {
+    min-height: calc(100vh - 395px);
+}
+
+h1 {
+    color: #223442;
+    font-weight: bold;
+}

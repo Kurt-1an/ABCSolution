@@ -1,0 +1,22 @@
+@using ABC.Shared.Models
+@page "/About"
+
+<link href="About.razor.css" rel="stylesheet" />
+
+<PageTitle>About Us</PageTitle>
+
+<section class="container mt-3 mb-5 FooterminHeight">
+    <div class="row About">
+        <h1>About Us</h1>
+        <span>
+            @content.About
+        </span>
+    </div>
+
+    <div class="row visionMission">
+        <h1>Vision and Mission</h1>
+        <span>
+            @content.VissionMission
+        </span>
+    </div>
+</section>

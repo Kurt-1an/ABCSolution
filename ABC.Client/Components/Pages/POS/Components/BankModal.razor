@@ -1,0 +1,57 @@
+<div class="modal fade" id="bankModal" tabindex="-1" aria-labelledby="bankModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="bankModalLabel">Bank Transfer</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row pb-2">
+                    <div class="col-6">
+                        <input type="number" class="form-control" id="floatingInput" placeholder="Reference #"
+                            required />
+                    </div>
+                    <div class="col-6">
+                        <input type="text" class="form-control" id="floatingInput" placeholder="Sender's account name"
+                            required />
+                    </div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-6">
+                        <input type="text" class="form-control" id="floatingInput" placeholder="Name of the bank"
+                            required />
+                    </div>
+                    <div class="col-6">
+                        <input type="text" class="form-control" id="floatingInput" placeholder="Receiver's account name"
+                            required />
+                    </div>
+                </div>
+                <div class="row pt-4 pb-4 justify-content-center">
+                    <div class="row pb-2 px-3 justify-content-center">
+                        <input type="text" class="form-control btncustom-width" id="totalAmountinBank"
+                            placeholder="Total amount to pay" readonly>
+                    </div>
+                    <div class="row pt-3 pb-4">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text csslabel" id="inputGroup-sizing-default">Amount
+                                    tendered</span>
+                            </div>
+                            <input type="number" class="form-control form-control-lg" id="banktenderedamount"
+                                placeholder="0.00" required />
+                            <button class="btn btn-primary btn-lg " type="button" id="button-bank"
+                                onclick="calculateTotalBank() ">Calculate</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input type="number" class="form-control" id="bankchange" placeholder="Change" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>

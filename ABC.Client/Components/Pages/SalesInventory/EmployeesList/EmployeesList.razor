@@ -1,0 +1,48 @@
+@using ABC.Shared.Models
+@using Layout
+@page "/EmployeesList"
+@layout AdminLayout
+
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Employees</PageTitle>
+
+<section class="container pt-2 pb-5">
+    <div class="row pb-3">
+        <!-- Title -->
+        <div class="col-8">
+            <h1><b>Employees</b></h1>
+        </div>
+        <div class="col-4">
+            <div class="input-group flex-nowrap">
+                <input type="text" class="form-control h-100" @bind-value="EmployeeSearchInput" @oninput="GetEmployeeList" aria-label="Search Employee" placeholder="Search an Employee..." />
+            </div>
+        </div>
+    </div>
+
+    <table id="tblData" class="table table-bordered table-hover" style="width:100%">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact Number</th>
+                <th>Assigned Store</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in employeeUsers)
+            {
+                <tr>
+                    <td>@user.TimeStamp</td>
+                    <td>@($"{user.FirstName} {user.LastName}")</td>
+                    <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
+                    <td>@user.StoreName</td>
+                    <td>@user.Role</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>

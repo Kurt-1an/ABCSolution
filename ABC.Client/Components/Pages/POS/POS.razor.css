@@ -1,0 +1,13 @@
+*:focus-visible, .btn-group > .btn:focus-visible{
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+*:focus-visible, .btn-group > .btn:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.zindex-css {
+    z-index: 3 !important;
+}

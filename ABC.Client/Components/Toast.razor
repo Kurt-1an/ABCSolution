@@ -1,0 +1,71 @@
+﻿@rendermode InteractiveServer
+
+<!-- Toast.razor -->
+@if (toasts.Any())
+{
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:5">
+        @foreach (var toast in toasts)
+        {
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="1000">
+                <div class="toast-header text-white bg-primary">
+                    <strong class="me-auto">@toast.Title</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    @toast.Message
+                    @if (toast.Link != null) { <a href="@toast.Link"> @toast.Mess</a> }
+
+                    @if (toast.Countdown > 0)
+                    {
+                        <div class="alert alert-warning mt-3" role="alert">
+                            <span class="fw-bold">Closing in:</span> @toast.Countdown seconds
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Inject] NavigationManager NavigationManager { get; set; }
+    private List<ToastModel> toasts = new List<ToastModel>();
+
+    public async void ShowToast(string title, string message, string? link = null, string? mess = null)
+    {
+        var toast = new ToastModel
+            {
+                Title = title,
+                Message = message,
+                Link = link,
+                Mess = mess,
+                Countdown = 5 // Set initial countdown value (in seconds)
+            };
+
+        toasts.Add(toast);
+        await InvokeAsync(StateHasChanged);
+        await HideToast(toast);
+    }
+
+    private async Task HideToast(ToastModel toast)
+    {
+        while (toast.Countdown > 0)
+        {
+            await Task.Delay(1000); // Delay for 1 second
+            toast.Countdown--; // Decrease the countdown value
+            await InvokeAsync(StateHasChanged);
+        }
+
+        toasts.Remove(toast); // Remove the toast after countdown reaches zero
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private class ToastModel
+    {
+        public string Title { get; set; }
+        public string Message { get; set; }
+        public string? Link { get; set; }
+        public string? Mess { get; set; }
+        public int Countdown { get; set; }
+    }
+}

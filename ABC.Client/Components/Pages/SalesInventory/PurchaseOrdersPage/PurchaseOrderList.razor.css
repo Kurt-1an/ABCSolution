@@ -1,0 +1,9 @@
+﻿h1 {
+    color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+.search {
+    margin-bottom: 1rem;
+    justify-content: end;
+}

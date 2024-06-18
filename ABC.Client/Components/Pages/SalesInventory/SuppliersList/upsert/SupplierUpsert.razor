@@ -1,0 +1,170 @@
+﻿@using ABC.Shared.Models
+@using Layout
+@page "/SupplierUpsert"
+@layout AdminLayout
+
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Supplier Details</PageTitle>
+
+<section class="container">
+    <EditForm Model="SelectedSupplier" OnValidSubmit="SaveSupplier" enctype="multipart/form-data">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" role="alert" />
+        <InputNumber @bind-Value="SelectedSupplier.Id" hidden></InputNumber>
+
+		<!--Supplier Header-->
+		<div class="row pt-2 pb-1" id="topbar">
+			<!-- Title -->
+			<div class="col-lg-8 col-sm-12 text-start mb-3 mb-sm-0">
+				<h1>@(SelectedSupplier.Id != 0 ? "Edit" : "Create") Supplier</h1>
+			</div>
+
+			<!-- Save Button -->
+			<div class="col-lg-4 col-sm-4 text-end mb-3 mb-sm-0">
+
+				@if (SelectedSupplier.Id != 0)
+				{
+					<button class="btn btn-success" data-bs-toggle="modal" type="submit" data-bs-target="#UpsertItem">
+						<i class="bi bi-floppy"></i> Update Supplier
+					</button>
+				}
+				else
+				{
+					<button class="btn btn-success" type="submit">
+						<i class="bi bi-floppy"></i> Save Supplier
+					</button>
+				}
+			</div>
+		</div>
+
+		<!--Breadcrumb-->
+		<div class="row pb-2">
+			<nav aria-label="breadcrumb">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="SupplierList">Suppliers List</a></li>
+					<li class="breadcrumb-item active" aria-current="page">@(SelectedSupplier.Id != 0 ? "Update" : "Create") List</li>
+				</ol>
+			</nav>
+		</div>
+
+		<!--Supplier's Information-->
+		<div class="row pt-3 pb-3">
+			<div class="col-12">
+				<div class="border p-3 container shadow">
+					<div class="row pb-2">
+						<h4>Supplier's Information</h4>
+						<hr />
+					</div>
+
+					<div class="row">
+						<div class="col-8">
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="companyName">Company Name</label>
+								<input @bind-value="SelectedSupplier.supplierCompanyName" type="text" class="form-control" id="companyName" aria-describedby="Company Name">
+							</div>
+						</div>
+						<div class="col-4">
+							<div class="input-group mb-3">
+								<label class="input-group-text" for="supplierStatus">Status</label>
+								<select class="form-select" id="supplierStatus" @bind="SelectedSupplier.supplierStatus">
+									<option disabled selected>Select supplier's status</option>
+									<option>Active</option>
+									<option>Inactive</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-6">
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="contactNumber">Contact Number</label>
+								<input @bind-value="SelectedSupplier.supplierContactNumber" type="text" class="form-control" id="contactNumber" aria-describedby="Contact Number" maxlength="11">
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="input-group mb-3">
+								<label class="input-group-text" id="emailAddress">Email Address</label>
+								<input @bind-value="SelectedSupplier.supplierEmail" type="text" class="form-control" id="emailAddress" aria-describedby="Email Address">
+							</div>
+						</div>
+					</div>
+
+					<!--Address-->
+					<div class="row pt-4 pb-3">
+						<div class="col-12">
+							<div class="border p-3 container">
+								<div class="row pb-2">
+									<h6>Supplier's Address</h6>
+									<hr />
+								</div>
+
+								<div class="row">
+									<div class="col-4">
+										<div class="input-group mb-3">
+											<label class="input-group-text" id="UnitNumber">Lot & Block #</label>
+											<input @bind-value="SelectedSupplier.supplierUnitNumber" type="text" class="form-control" id="UnitNumber" aria-describedby="Unit Number">
+										</div>
+									</div>
+									<div class="col-4">
+										<div class="input-group mb-3">
+											<label class="input-group-text" id="streetAndSubdivision">Street</label>
+											<input @bind-value="SelectedSupplier.supplierStreetSubdv" type="text" class="form-control" id="streetAndSubdivision" aria-describedby="street">
+										</div>
+									</div>
+									<div class="col-4">
+										<div class="input-group mb-3">
+											<label class="input-group-text" id="barangay">Barangay</label>
+											<input @bind-value="SelectedSupplier.supplierBarangay" type="text" class="form-control" id="barangay" aria-describedby="barangay">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-4">
+										<div class="input-group mb-3">
+											<label class="input-group-text" id="city">City</label>
+											<input @bind-value="SelectedSupplier.supplierCity" type="text" class="form-control" id="city" aria-describedby="City">
+										</div>
+									</div>
+									<div class="col-4">
+										<div class="input-group mb-3">
+											<label class="input-group-text" id="province">Province</label>
+											<input @bind-value="SelectedSupplier.supplierProvince" type="text" class="form-control" id="province" aria-describedby="Province">
+										</div>
+									</div>
+									<div class="col-4">
+										<div class="input-group mb-3">
+											<label class="input-group-text" id="zipcode">Zipcode</label>
+											<input @bind-value="SelectedSupplier.supplierZipCode" type="text" class="form-control" id="zipcode" aria-describedby="Zipcode">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--Remarks-->
+		<div class="row pt-4 pb-5">
+			<div class="col-12">
+				<div class="border p-3 container shadow">
+					<div class="row pb-2">
+						<h4>Remarks</h4>
+						<hr />
+					</div>
+
+					<div class="row">
+						<div class="input-group mb-3" >
+							<textarea @bind="SelectedSupplier.supplierNote" class="form-control h-100 w-100"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </EditForm>
+
+	<br/>
+</section>

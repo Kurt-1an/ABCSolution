@@ -1,0 +1,178 @@
+﻿@page "/StockTransfer"
+@layout AdminLayout
+@using System.Globalization;
+@using ABC.Client.Components.Pages.POS.Components;
+@using ABC.Shared.Utility
+@using ABC.Client.Components.SharedComponents;
+@using Layout;
+
+@namespace ABC.Client.Components.Pages.StockTransfers
+
+@rendermode InteractiveServer
+<Toast @ref="toastRef" />
+
+<PageTitle>ABC - Stock Transfer</PageTitle>
+
+<section id="alert" class="@(showNotice ? "" : "d-none")">
+	<NoticeComponent Notice="@Notice" />
+</section>
+
+<section class="container my-3">
+    @* PRODUCT INFORMATION *@
+    <section class="row g-2 pt-3">
+        <section class="">
+            <div class="border p-3 container shadow">
+                <div class="row border-bottom mb-3">
+                    <p class="fs-5 fw-bold">Product Details</p>
+                </div>
+
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping"><i class="bi bi-search me-2"></i> Search
+                        Product</span>
+                    <input type="text" class="form-control" @bind-value="ProductSearchInput" @oninput="GetProductList"
+                        @onfocusin="() => ShowProductDropdownHandler(true)"
+                        @onfocusout="() => ShowProductDropdownHandler(false)" aria-label="Search Product"
+                        aria-describedby="addon-wrapping" />
+
+                </div>
+                <div class="dropdown">
+                    <ul class='dropdown-menu col-12 mt-3 @(ProductList.Count > 0 && ShowProductDropdown ? "show" : "")'>
+                        @foreach (var product in ProductList)
+                        {
+                            <li>
+                                <div class="dropdown-item cursor-pointer d-flex" data-bs-toggle="modal"
+                                    data-bs-target="#productModal" @onclick="() => PopulateProductDetails(product.Id)">
+                                    <div class="me-3">
+                                        @if (!String.IsNullOrEmpty(product.ImageUrl))
+                                        {
+                                            <img src="@product.ImageUrl" alt="@product.productName"
+                                                style="max-width: 100px; max-height: 100px;">
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-image fs-2"></i>
+                                        }
+                                    </div>
+                                    <div class="">
+                                        <div class="text-14px">Product Name: @product.productName</div>
+                                        <div class="text-14px">SKU: @product.SKU</div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </section>
+</section>
+
+<section class="border container shadow mt-4">
+    <div class="row my-2">
+        <h5><b>Stock Transfers</b></h5>
+        <hr />
+    </div>
+
+    <!--DISPLAY SELECTED ITEMS-->
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Timestamp</th>
+                <th>Product</th>
+                <th>Transferred Stock</th>
+                <th>Source Store</th>
+                <th>Destination Store</th>
+                <th>Employee Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in stockAudit.OrderByDescending(a => a.Timestamp))
+            {
+                <tr>
+                    <td>@record.Id</td>
+                    <td>@record.Timestamp</td>
+                    <td>@record.StockPerStore.Product.productName</td>
+                    <td>@record.TransferredStocks</td>
+                    <td>@record.SourceStoreName</td>
+                    <td>@record.DescitnationStoreName</td>
+                    <td>@record.EmployeeName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+
+@* PRODUCT MODAL *@
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="productModalLabel">Product Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <b>Product Name: </b> @ProductInModal.productName
+                </div>
+                <div>
+                    <b>SKU: </b> @ProductInModal.SKU
+                </div>
+                <div>
+                    <b>Retail Price: </b> @ProductInModal.RetailPrice
+                </div>
+                <div>
+                    <b>Total InStock: </b> @ProductInModal.StockPerStore.TotalStocks
+                </div>
+
+                <div class="form-group mt-3" id="quantityInputDiv">
+                    <label for="quantity">Addsome Business Corporation Stock:</label>
+                    <input type="number" class="form-control pt-3" id="quantity"
+                           @bind-value="ProductInModal.StockPerStore.Store1StockQty" @bind-value:event="oninput"
+                           placeholder="Enter quantity" aria-label="Quantity" aria-describedby="quan">
+                </div>
+
+                <div class="form-group" id="quantityInputDiv">
+                    <label for="quantity">Ahead Biz Computers Stock:</label>
+                    <input type="number" class="form-control pt-3" id="quantity"
+                           @bind-value="ProductInModal.StockPerStore.Store2StockQty" @bind-value:event="oninput"
+                           placeholder="Enter quantity" aria-label="Quantity" aria-describedby="quan">
+                </div>
+
+                @if (ProductInModal is not null && ProductInModal.Id > 0)
+                {
+                    <div class="text-danger">
+                        @if ((ProductInModal.StockPerStore.Store1StockQty + ProductInModal.StockPerStore.Store2StockQty) >
+                       ProductInModal.StockPerStore.TotalStocks)
+                        {
+                            <p>The total entered stocks are more than @ProductInModal.StockPerStore.TotalStocks</p>
+                        }
+                        else if ((ProductInModal.StockPerStore.Store1StockQty +
+                        ProductInModal.StockPerStore.Store2StockQty) < ProductInModal.StockPerStore.TotalStocks)
+                        {
+                            <p>The total entered stocks are less than @ProductInModal.StockPerStore.TotalStocks</p>
+                        }
+                    </div>
+                }
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                @if ((ProductInModal.StockPerStore.Store1StockQty + ProductInModal.StockPerStore.Store2StockQty) ==
+                ProductInModal.StockPerStore.TotalStocks)
+                {
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                            @onclick="() => TransferStocks(ProductInModal.StockPerStore)">
+                        Confirm
+                    </button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" disabled>Confirm</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

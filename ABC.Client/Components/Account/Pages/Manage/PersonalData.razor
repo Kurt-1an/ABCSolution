@@ -1,0 +1,38 @@
+﻿@page "/Account/Manage/PersonalData"
+
+@inject IdentityUserAccessor UserAccessor
+
+<PageTitle>ABC - Personal Data</PageTitle>
+
+<section class="container shadow px-5">
+    <StatusMessage />
+    <div class="row pt-4" id="topbar">
+        <h2>Personal Data</h2>
+    </div>
+
+    <div class="row">
+        <p>Your account contains personal data that you have given us. This page allows you to download or delete that data.</p>
+        <p>
+            <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
+        </p>
+
+        <div class="button-container mt-2 mb-5">
+            <form action="Account/Manage/DownloadPersonalData" method="post">
+                <AntiforgeryToken />
+                <button class="btn mx-2" type="submit">Download</button>
+            </form>
+            <a href="Account/Manage/DeletePersonalData" class="btn btn2 mx-2">Delete</a>
+        </div>
+    </div>
+</section>
+
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
+    }
+}

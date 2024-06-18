@@ -1,0 +1,129 @@
+@using ABC.Shared.Models
+@using ABC.Shared.Utility
+@using Layout
+@page "/ProducReturnstList"
+@layout AdminLayout
+
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Returned Products</PageTitle>
+
+<AuthorizeView Roles="Admin, Manager">
+	<Authorized>
+		<div class="container pt-2 pb-5">
+			<div class="row toprow">
+				<!-- Title -->
+				<div class="col-lg-8">
+					<h1>Returned Products</h1>
+				</div>
+				<div class="col-lg-4 col-sm-12 buttonback">
+					<a class="btn btn-danger" role="button" href="ProductList">
+						Back
+					</a>
+				</div>
+			</div>
+			<div class="row search">
+				<div class="col-4">
+					<div class="input-group flex-nowrap">
+						<input type="text" class="form-control h-100" @bind-value="SearchInput" @oninput="SearchFeature" aria-label="Search" placeholder="Search..." />
+					</div>
+				</div>
+			</div>
+			<div>
+				@if (orderDetailsList != null)
+				{
+					foreach (var item in orderDetailsList)
+					{
+						if (item.Remark != null && item.status == SD.ProductRefunded || item.Remark != null && item.status == SD.RefundedProduct)
+						{
+							<div class="list-group">
+								<li class="list-group-item">
+									<div class="row mx-auto">
+										<div class="prodImage">
+											<img src="@item.Product.ImageUrl" class="img-fluid" />
+										</div>
+										<div class="col-7 texts">
+											<h5 class="my-0">@item.Product.productName</h5>
+											<p class="text-danger"><strong>Reason for return/replace: @item.Remark</strong></p>
+
+											<p>Returned Quantity: @item.remarkQty</p>
+											<p>Remaining: @(item.Count - item.remarkQty)</p>
+										</div>
+										<div class="col-2 text-end">
+											<span class="text-muted"><b>@("\u20B1" + (item.Product.RetailPrice * item.Count).ToString("#,###.00"))</b></span><br />
+												@if (item.Remark.Contains("damaged"))
+												{
+													<button type="button" class="btn btn-sm btn-secondary mt-3" disabled>Restock</button>
+												}
+												else
+												{
+													<button type="button" class="btn btn-sm btn-success mt-3" data-bs-toggle="modal" data-bs-target="#refundModal" @onclick='() => PopulateOrder(item.Id)'>Restock</button>
+												}
+										</div>
+									</div>
+								</li>
+							</div>
+						}
+					}
+				}
+			</div>
+		</div>
+	</Authorized>
+	<NotAuthorized>
+		<div class="text-center">
+			<h3 class="text-danger">You are not authorized to view this content.</h3>
+			<h5>To access this section, please <a href="/Account/Login">login</a> an account with an access to this section of the application </h5>
+			<a class="btn btn-danger" role="button" href="ProductList">
+				Go Back
+			</a>
+		</div>
+	</NotAuthorized>
+</AuthorizeView>
+
+
+
+<!-- REFUND Modal -->
+<div class="modal fade" id="refundModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+
+			<div class="modal-header bg-primary text-white">
+				<h5 class="modal-title" id="uploadModalLabel">Merge</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+
+			<div class="modal-body">
+
+				<label class="form-label h6">Are you sure you want to merge the item back to inventory?</label>
+				<span class="d-block mb-3 h5">@prodName</span>
+
+				<!-- Quantity Selector -->
+				<div class="mb-3">
+					<label for="quantity" class="form-label h6">Quantity:</label>
+
+					@if (selectedOrder.remarkQty > mergeQty || selectedOrder.remarkQty > maxQty)
+					{
+						<label class="text-danger ms-2">*Quantity exceeded returned product</label>
+					}
+
+					<input type="number" id="quantity" class="form-control" min="1" max="@maxQty" @bind="selectedOrder.remarkQty">
+					<span class="text-muted">Available Stock at @storeName: @maxQty</span>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					@if (selectedOrder.remarkQty > mergeQty || selectedOrder.remarkQty > maxQty)
+					{
+						<button type="button" class="btn btn-success" disabled @onclick="Merge" data-bs-dismiss="modal">Restock</button>
+					}
+					else
+					{
+						<button type="button" class="btn btn-success" @onclick="Merge" data-bs-dismiss="modal">Restock</button>
+					}
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+

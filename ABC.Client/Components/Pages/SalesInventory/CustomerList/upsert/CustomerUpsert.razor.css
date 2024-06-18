@@ -1,0 +1,25 @@
+﻿h1 {
+    color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+.breadcrumb {
+    margin-bottom: 1rem;
+}
+
+.infoContainer {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+    .infoContainer .subContainer {
+        border: 1px solid lightgrey;
+        padding: 1rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+        .infoContainer .subContainer .tableTable{
+            margin-left: 1rem;
+            margin-right: 1rem;
+        }

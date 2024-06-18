@@ -1,0 +1,71 @@
+@using ABC.Shared.Models
+@using System.Globalization
+@page "/MyOrders"
+@rendermode InteractiveServer
+
+<PageTitle>ABC - My Orders</PageTitle>
+
+<section class="container pt-2 pb-5 FooterminHeight">
+    <div class="row pt-4 pb-3" id="topbar">
+        <!-- Title -->
+        <div class="col-lg-8 col-sm-12 text-start mb-3 mb-sm-0">
+            <h1>My Orders</h1>
+        </div>
+    </div>
+
+	<div class="d-flex justify-content-between pb-3 pt-2">
+		<div class="list-group list-group-horizontal-sm justify-content-center">
+			<button type="button" class="list-group-item @all" @onclick="@(() => SetActiveStatus("all"))">All</button>
+			<button type="button" class="list-group-item @pending" @onclick="@(() => SetActiveStatus("pending"))">To Process</button>
+			<button type="button" class="list-group-item @inprocess" @onclick="@(() => SetActiveStatus("inprocess"))">Processing</button>
+			<button type="button" class="list-group-item @shipped" @onclick="@(() => SetActiveStatus("shipped"))">Out for Delivery</button>
+			<button type="button" class="list-group-item @cancelled" @onclick="@(() => SetActiveStatus("cancelled"))">Cancelled</button>
+			<button type="button" class="list-group-item @completed" @onclick="@(() => SetActiveStatus("completed"))">Completed</button>
+		</div>
+    </div>
+
+	<table class="table table-striped table-hover table-sm mt-3">
+		<thead>
+			<tr>
+				<th>Order ID</th>
+				<th>Contact Number</th>
+				<th>Delivery Address</th>
+				<th>Total Order Amount</th>
+				<th>Order Status</th>
+				<th></th>
+			</tr>
+		</thead>
+
+		@if (OrderHeader.Count > 0)
+		{
+			
+			@foreach (var order in OrderHeader.OrderByDescending(o=>o.Id))
+			{
+				double totalToPay = Convert.ToDouble(order.DeliveryFee) + order.OrderTotal;
+				<tr>
+					<th scope="row"> @order.Id </th>
+					<td> @order.ContactNumber</td>
+					<td> @($"{order.AddressLine ?? "---"}, {order.City ?? "---"}, {order.Province ?? "---"}, {order.ZipCode}")</td>
+					<td>
+						@totalToPay.ToString("C", new CultureInfo("en-PH"))
+					</td>
+					<td> @order.OrderStatus </td>
+					<td class="text-center d-flex justify-content-around">
+						<a class="a-style-none" href="MyOrder?id=@order.Id">
+							<i class="bi bi-eye text-primary cursor-pointer" title="View" tabindex="0"></i>
+						</a>
+					</td>
+				</tr>
+			}
+		}
+		else
+		{
+			<tr>
+				<td colspan="6" class="text-center pt-5">
+					<h3>You have no orders</h3>
+				</td>
+			</tr>
+		}
+
+	</table>
+</section> 

@@ -1,0 +1,57 @@
+﻿@page "/starship-3"
+@using ABC.Shared.Utility
+
+
+
+<p>HELLO WORLD</p>
+
+
+
+@code {
+    private EmailSender _EmailSender = new(AppSettingsHelper.EmailSenderMail, AppSettingsHelper.EmailSenderPw, AppSettingsHelper.EmailSenderSmtp, AppSettingsHelper.EmailSenderPort);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var email = "markstamaria30@gmail.com";
+        var callbackUrl = "https://i.ibb.co/DGLCYMv/mf.jpg";
+        var imgSrc = "https://i.ibb.co/WxWpFbq/ABCLogo.png";
+
+
+        var emailBody = $@"
+            <html>
+            <head>
+                <title>We are delighted to welcome you to ABC Shopping Website!</title>
+            </head>
+            <body style='font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;'>
+                <table width='100%' cellpadding='0' cellspacing='0' border='0'>
+                    <tr>
+                        <td align='center'>
+                            <table cellpadding='0' cellspacing='0' border='0' style='max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+                                <tr>
+                                    <td style='text-align: center;'>
+                                        <img src='{imgSrc}' alt='ABC Shopping Website Logo' style='max-width: 200px; margin-bottom: 20px;'>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h1 style='color: #333; text-align: center; margin-top: 0;'>Welcome to ABC Shopping Website!</h1>
+                                        <p style='color: #666; line-height: 1.6; margin-bottom: 20px; text-align: center;'>To confirm your registration and activate your account, please click on the following link:</p>
+                                        <p style='text-align: center;'><a href='{callbackUrl}' style='color: #007bff; text-decoration: none; display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; border-radius: 5px; text-transform: uppercase;'>Confirm Email</a></p>
+                                        <p style='color: #666; line-height: 1.6; margin-bottom: 20px; text-align: center;'>By confirming your registration, you will gain access to all the features and benefits of our platform. If you did not register on our website, please disregard this email.</p>
+                                        <p style='color: #666; line-height: 1.6; margin-bottom: 20px; text-align: center;'>Thank you for registering with ABC Shopping Website! We are looking forward to serving you and providing you with a good online shopping experience!</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>
+        ";
+
+
+        await _EmailSender.SendEmailAsync(email, "Confirm Email", emailBody);
+
+    }
+
+}

@@ -1,0 +1,100 @@
+@using ABC.Shared.Models
+@using Layout
+@page "/CustomerPDF"
+@layout AdminLayout
+
+
+@*@{
+	Layout = null;
+}*@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>PrintCustomer</title>
+	<link rel="stylesheet" href="~/css/customerpdf.css" />
+</head>
+<body>
+	<div class="contenedor">
+
+		<table style="width:100%">
+			<tr>
+				<td>
+					<img src="~/image/logoabc.png" style="width: 200px;height:120px" />
+				</td>
+				<td style="text-align:right">
+					<table style="margin-right:0;margin-left:auto">
+						<tr><td><p class="title2">@DateTime.Now.ToString("yyyy-MM-dd HH:mm")</p></td></tr>
+						<tr><td></td></tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<br />
+		<table style="width:100%">
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td>
+								<p class="title">Addsome Shop</p>
+							</td>
+						</tr>
+						<tr>
+							<td><p class="text">Address: Street:  Greenhills</p></td>
+						</tr>
+						<tr>
+							<td>
+								<p class="text">Email: support@addsome.com</p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<br />
+		<br />
+
+		<table class="tbproductos" style="width:100%">
+			<thead>
+				<tr>
+					<th class="tbth" style="width:30%">Name</th>
+					<th class="tbth" style="width:20%">Email</th>
+					<th class="tbth" style="width:50%">Address</th>
+					<th class="tbth" style="width:130px">Total</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					@*
+                    foreach (var item in Model)
+					{
+						<tr>
+							<td class="td-item"><p class="item">@item.FirstName @item.LastName</p></td>
+							<td class="td-item"><p class="item">@item.EmailAddress</p></td>
+							<td class="td-item"><p class="item">@item.ApSuUn @item.StreetorSubd @item.Barangay @item.City @item.Province @item.ZipCode</p></td>
+							<td></td>
+
+						</tr>
+					} *@
+				}
+
+				<tr>
+					<td colspan="2" rowspan="3"></td>
+					<td class="td-item">
+						<p class="item-2"># of Customers</p>
+					</td>
+					<td class="item-3">
+						@*<p>@Model.Count()</p>*@
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+
+	</div>
+
+</body>
+</html>

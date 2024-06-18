@@ -1,0 +1,10 @@
+﻿.container {
+    margin-top: 1rem;
+    margin-bottom: 4rem;
+}
+
+h1 {
+    color: var(--maincolor-darkblue--);
+    text-align: left;
+    margin-bottom: 1rem;
+}

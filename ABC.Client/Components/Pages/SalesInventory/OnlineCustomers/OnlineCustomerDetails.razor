@@ -1,0 +1,169 @@
+﻿@using ABC.Shared.Models
+@using ABC.Shared.Utility
+@using Layout
+@using System.Globalization
+@page "/OnlineCustomerDetail"
+@layout AdminLayout
+
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Online Customer Details</PageTitle>
+
+<section class="container">
+	<InputText @bind-Value="onlineCustomerId" hidden />
+
+	<!--Customer Header-->
+	<div class="row pt-2 pb-1" id="topbar">
+		<!-- Title -->
+		<div class="col-lg-8 col-sm-12 text-start mb-3 mb-sm-0">
+			<h3>Online Customer Details</h3>
+		</div>
+		<div class="col-4 text-end">
+			<a type="button" class="btn btn-danger" href="OnlineCustomers">Back</a>
+		</div>
+	</div>
+
+	<div class="infoContainer row">
+		<div class="col-12">
+			<div class="subContainer">
+				<div class="row">
+					<h4>Customer's Information</h4>
+					<hr />
+				</div>
+
+				<div class="row">
+					<div class="col-6">
+						<div class="input-group mb-3">
+							<label class="input-group-text" id="firstName">First Name</label>
+							<input @bind-value="SelectedCustomer.FirstName" type="text" class="form-control" id="firstName" aria-describedby="firstName" disabled>
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="input-group mb-3">
+							<label class="input-group-text" id="lastName">Last Name</label>
+							<input @bind-value="SelectedCustomer.LastName" type="text" class="form-control" id="lastName" aria-describedby="lastName" disabled>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-6">
+						<div class="input-group mb-3">
+							<label class="input-group-text" id="contactNumber">Contact Number</label>
+							<input @bind-value="SelectedCustomer.PhoneNumber" type="text" class="form-control" id="contactNumber" aria-describedby="Contact Number" disabled>
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="input-group mb-3">
+							<label class="input-group-text" id="emailAddress">Email Address</label>
+							<input @bind-value="SelectedCustomer.Email" type="text" class="form-control" id="emailAddress" aria-describedby="Email Address" disabled>
+						</div>
+					</div>
+				</div>
+
+				<!--Address-->
+				<div class="row pt-4 pb-3">
+					<div class="col-12">
+						<div class="border p-3 container">
+							<div class="row">
+								<h6>Customer's Billing Address</h6>
+								<hr />
+							</div>
+							<div class="row">
+								<div class="col-4">
+									<div class="input-group mb-3">
+										<label class="input-group-text" id="AddressLine">Address Line</label>
+										<input @bind-value="SelectedCustomer.Address" type="text" class="form-control" id="AddressLine" aria-describedby="AddressLine" disabled>
+									</div>
+								</div>
+								<div class="col-4">
+									<div class="input-group mb-3">
+										<label class="input-group-text" id="city">City</label>
+										<input @bind-value="SelectedCustomer.City" type="text" class="form-control" id="city" aria-describedby="City" disabled>
+									</div>
+								</div>
+								<div class="col-4">
+									<div class="input-group mb-3">
+										<label class="input-group-text" id="province">Province</label>
+										<input @bind-value="SelectedCustomer.Province" type="text" class="form-control" id="province" aria-describedby="Province" disabled>
+									</div>
+								</div>
+								<div class="col-4">
+									<div class="input-group mb-3">
+										<label class="input-group-text" id="PostalCode">PostalCode</label>
+										<input @bind-value="SelectedCustomer.PostalCode" type="text" class="form-control" id="PostalCode" aria-describedby="PostalCode" disabled>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="infoContainer row">
+		<div class="col-12">
+			<div class="subContainer">
+				<div class="row">
+					<h4>Transactions</h4>
+					<hr />
+				</div>
+
+				<div class="tableTable row">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Amount Paid</th>
+								<th>Payment Mode</th>
+								<th>Order Date</th>
+								<th>Deliver Date</th>
+								<th>Status</th>
+								<th>Store</th>
+								<th>Sales Person</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Orders.Count > 0)
+							{
+								@foreach (var order in Orders)
+								{
+									<tr>
+										<th scope="row">@order.Id</th>
+										<td>@order.OrderTotal.ToString("C", new CultureInfo("en-PH"))</td>
+										<td>@order.PaymentMode</td>
+										<td>@order.OrderDate</td>
+										<td>@order.ShippingDate</td>
+										<td>@order.OrderStatus</td>
+										<td>@order.StoreName</td>
+										<td>
+											@if (order.OrderStatus == SD.StatusCompleted)
+											{
+												@order.CompletedBy
+											}
+											else if (order.OrderStatus == SD.StatusCancelled)
+											{
+												@order.CancelledBy
+											}
+											else if (order.OrderStatus == SD.StatusRefunded)
+											{
+												@order.RefundedBy
+											}
+										</td>
+										<td>
+											<a href="@($"OrderDetails?id={order.Id}")">
+												<i class="bi bi-eye-fill text-primary"></i>
+											</a>
+										</td>
+									</tr>
+								}
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

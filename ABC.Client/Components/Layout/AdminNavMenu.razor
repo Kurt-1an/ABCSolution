@@ -1,0 +1,198 @@
+﻿@using ABC.Client.Components.SharedComponents;
+
+<!--******-->
+<!--TOPBAR-->
+<!--******-->
+<nav class="navbar navbar-dark bg-dark navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3 py-3 hideWhenPrint">
+	<div class="container-fluid">
+		<div class="row align-items-center">
+
+			<!--Toggle Button-->
+			<div class="col-auto">
+				<button type="button" class="btn btn-outline-light ms-1" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScroll" aria-controls="offcanvasScrolling">
+					<i class="bi bi-list-nested"></i>
+				</button>
+			</div>
+		</div>
+
+		<div class="row align-items-center">
+			<!--Shop back-->
+			<div class="col-auto">
+				<a class="btn btn-outline-light" title="Back to Shop" href="/">
+					<i class="bi bi-shop"></i>
+				</a>
+			</div>
+		</div>
+	</div>
+</nav>
+
+
+<!--******-->
+<!--SIDEBAR-->
+<!--******-->
+<div class="offcanvas offcanvas-start hideWhenPrint" data-bs-scroll="true" tabindex="-1" data-bs-backdrop="true" id="offcanvasScroll" aria-labelledby="offcanvasScrollingLabel">
+
+	<!--Off Header-->
+	<div class="offcanvas-header container-fluid">
+		<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas" aria-label="Close"><i class="bi bi-list-nested"></i></button>
+	</div>
+
+	<!--Off Body-->
+	<div class="offcanvas-body bd-links" id="offcanvasScrolling">
+
+		<ul class="list-unstyled">
+			<li>
+				<NavLink class="btn btn-outline-secondary w-100 text-start" type="button" href="/Dashboard" data-enhance-nav="false">
+					<span class="d-flex align-items-center">
+						<i class="bi bi-speedometer2 pe-2"></i>
+						<b>Dashboard</b>
+					</span>
+				</NavLink>
+			</li>
+
+			<li>
+				<!--Sales-->
+				<NavLink class="btn btn-outline-secondary w-100 text-start" data-bs-toggle="collapse" href="#sales-collapse" aria-expanded="false" >
+					<span class="d-flex align-items-center">
+						<i class="bi bi-cash pe-2"></i>
+						<b>Sales</b>
+						<span class="ms-auto">
+							<i class="bi bi-chevron-down"></i>
+						</span>
+					</span>
+				</NavLink>
+
+				<div class="collapse" id="sales-collapse">
+					<ul class="list-unstyled">
+						<li>
+							<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/POS">Point of Sales</NavLink>
+							<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/ManageOrderABC">Manage Order</NavLink>
+							<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/SalesRecord">Sales Record</NavLink>
+						</li>
+					</ul>
+				</div>
+			</li>
+
+			<li>
+				<!--Inventory-->
+				<NavLink class="btn btn-outline-secondary w-100 text-start" data-bs-toggle="collapse" href="#inventory-collapse" aria-expanded="false" >
+					<span class="d-flex align-items-center">
+						<i class="bi bi-box pe-2"></i>
+						<b>Inventory</b>
+						<span class="ms-auto">
+							<i class="bi bi-chevron-down"></i>
+						</span>
+					</span>
+				</NavLink>
+
+				<div class="collapse" id="inventory-collapse">
+					<ul class="list-unstyled">
+						<li>
+							<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="ProductList">Product list</NavLink>
+							<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="Category">Category list</NavLink>
+							<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/StockTransfer">Stock Transfers</NavLink>
+							<AuthorizeView Roles="Admin" Context="innerContext">
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/PurchaseOrdersList">Purchase Orders</NavLink>
+							</AuthorizeView>
+						</li>
+					</ul>
+				</div>
+			</li>
+
+			<AuthorizeView Roles="Admin, Manager" Context="innerContext">
+				<li>
+					<!--People-->
+					<NavLink class="btn btn-outline-secondary w-100 text-start" data-bs-toggle="collapse" href="#people-collapse" aria-expanded="false">
+						<span class="d-flex align-items-center">
+							<i class="bi bi-people pe-2"></i>
+							<b>People</b>
+							<span class="ms-auto">
+								<i class="bi bi-chevron-down"></i>
+							</span>
+						</span>
+					</NavLink>
+
+					<div class="collapse" id="people-collapse">
+						<ul class="list-unstyled">
+							<li>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="CustomerList">Customers</NavLink>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="OnlineCustomers">Online Customers</NavLink>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="SupplierList">Suppliers</NavLink>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/EmployeesList">Employees List</NavLink>
+							</li>
+						</ul>
+					</div>
+				</li>
+			</AuthorizeView>
+			<AuthorizeView Roles="Admin" Context="innerContext">
+				<li>
+					<!--Report & Analytics-->
+					<NavLink class="btn btn-outline-secondary w-100 text-start" data-bs-toggle="collapse" href="#report-collapse" aria-expanded="false">
+						<span class="d-flex align-items-center">
+							<i class="bi bi-clipboard-data pe-2"></i>
+							<b>Reports</b>
+							<span class="ms-auto">
+								<i class="bi bi-chevron-down"></i>
+							</span>
+						</span>
+					</NavLink>
+
+					<div class="collapse" id="report-collapse">
+						<ul class="list-unstyled">
+							<li>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/SalesReport" data-enhance-nav="false">Sales Report</NavLink>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/InventoryReport" data-enhance-nav="false">Inventory Report</NavLink>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<li>
+					<!--Security-->
+					<NavLink class="btn btn-outline-secondary w-100 text-start" data-bs-toggle="collapse" href="#audit-collapse" aria-expanded="false">
+						<span class="d-flex align-items-center">
+							<i class="bi bi-shield pe-2"></i>
+							<b>Audit Log</b>
+							<span class="ms-auto">
+								<i class="bi bi-chevron-down"></i>
+							</span>
+						</span>
+					</NavLink>
+
+					<div class="collapse" id="audit-collapse">
+						<ul class="list-unstyled">
+							<li>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/ProductLog" data-enhance-nav="false">Product Audit</NavLink>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/StockLog" data-enhance-nav="false">Stock transfer Audit</NavLink>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/SupplierLog" data-enhance-nav="false">Supplier Audit</NavLink>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<li>
+					<!--Settings-->
+					<NavLink class="btn btn-outline-secondary w-100 text-start" data-bs-toggle="collapse" href="#settings-collapse" aria-expanded="false">
+						<span class="d-flex align-items-center">
+							<i class="bi bi-gear pe-2"></i>
+							<b>Settings</b>
+							<span class="ms-auto">
+								<i class="bi bi-chevron-down"></i>
+							</span>
+						</span>
+					</NavLink>
+					<div class="collapse" id="settings-collapse">
+						<ul class="list-unstyled">
+							<li>
+								<NavLink class="btn btn-outline-secondary fw-lighter small w-100 mt-1" href="/WebSettings">Website</NavLink>
+							</li>
+						</ul>
+					</div>
+				</li>
+			</AuthorizeView>
+		</ul>
+	</div>
+</div>
+
+
+

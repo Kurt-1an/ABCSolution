@@ -1,0 +1,109 @@
+﻿@using ABC.Shared.Models
+@using ABC.Shared.Utility
+@using Layout
+@using System.Globalization
+@page "/PurchaseOrdersList"
+@layout AdminLayout
+
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Purchase Orders</PageTitle>
+
+<section class="container pt-2 pb-5">
+    <div class="row pb-4">
+        <!-- Title -->
+        <div class="col-8">
+            <h1>Purchase Orders</h1>
+        </div>
+
+        <!-- Export Button -->
+        <div class="col-lg-4 col-sm-4 text-end mb-3 mb-sm-0">
+            <a href="/PurchaseOrder" class="btn btn-primary">
+                Create Purchase Order
+            </a>
+        </div>
+    </div>
+
+    <div class="row search">
+        <div class="col-4">
+            <div class="input-group flex-nowrap">
+                <input type="text" class="form-control h-100" @bind-value="SearchInput" @oninput="SearchFeature" aria-label="Search" placeholder="Search..." />
+            </div>
+        </div>
+    </div>
+
+    <table id="tblpurchaseOrderData" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Supplier</th>
+                <th>Deliver to</th>
+                <th>Payment Term</th>
+                <th>Delivery Date</th>
+                <th>Total</th>
+                <th class="text-center">Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (purchaseOrders.Count > 0 && purchaseOrders.Any())
+            {
+                @foreach (var purchase in purchaseOrders)
+                {
+                    <tr>
+                        <th scope="row">@purchase.Id</th>
+                        <td>@($"{purchase.Supplier?.supplierCompanyName ?? "Error"}")</td>
+                        <td>@($"{purchase.Store?.storeName ?? "Error"}")</td>
+                        <td>@purchase.PaymentTerm</td>
+                        <td>@purchase.DeliveryDate</td>
+                        <td>@purchase.OrderTotal.ToString("C", new CultureInfo("en-PH"))</td>
+                        <td class="text-center">
+                            @if (purchase.Status != SD.PO_Pending)
+                            {
+                                @purchase.Status
+                            }
+                            else
+                            {
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-outline-primary btn-sm">@purchase.Status</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="visually-hidden">@purchase.Status</span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal" @onclick="() => UpdateStatusModalHandler(SD.PO_Completed, purchase.Id)">@SD.PO_Completed</button></li>
+                                        <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal" @onclick="() => UpdateStatusModalHandler(SD.PO_Rejected, purchase.Id)">@SD.PO_Rejected</button></li>
+                                    </ul>
+                                </div>
+                            }
+
+                        </td>
+                        <td class="text-center">
+                            <a href="PurchaseOrder?id=@purchase.Id" class="a-style-none">
+                                <i class="bi bi-eye-fill text-primary cursor-pointer" title="View" tabindex="0"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Change the status from <b>Pending</b> to <b>@newStatus</b>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="UpdateStatusHandler" data-bs-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

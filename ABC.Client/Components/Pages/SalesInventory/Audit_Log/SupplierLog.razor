@@ -1,0 +1,51 @@
+﻿@page "/SupplierLog"
+@layout AdminLayout
+@using System.Globalization;
+@using ABC.Client.Data
+@using ABC.Shared.Models
+@using Layout;
+@using ABC.Shared.Services;
+
+@namespace ABC.Client.Components.Pages.SalesInventory.Audit_Log
+
+@rendermode InteractiveServer
+
+<PageTitle>Suppliers Audit</PageTitle>
+
+<section class="container pt-2 pb-5">
+    <div class="row pb-3">
+        <!-- Title -->
+        <div class="col-8">
+            <h1>Suppliers Audit</h1>
+        </div>
+        <div class="col-4">
+            <div class="input-group flex-nowrap">
+                <input type="text" class="form-control h-100" @bind-value="SearchInput" @oninput="SearchFeature" aria-label="Search" placeholder="Search..." />
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Timestamp</th>
+                <th>Action</th>
+                <th>Supplier Name</th>
+                <th>Employee Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in AuditList.OrderByDescending(a => a.Timestamp))
+            {
+                <tr>
+                    <td>@record.Id</td>
+                    <td>@record.Timestamp</td>
+                    <td>@record.Action</td>
+                    <td>@record.Supplier.supplierCompanyName</td>
+                    <td>@record.EmployeeName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>

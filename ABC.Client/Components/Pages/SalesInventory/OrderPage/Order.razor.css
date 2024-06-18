@@ -1,0 +1,17 @@
+﻿h1 {
+    color: var(--maincolor-darkblue--);
+    font-weight: bold;
+}
+
+.title {
+    text-align: left;
+}
+
+.table td, .table th {
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflow content */
+    text-overflow: ellipsis; /* Display ellipsis for overflow text */
+    border: 1px solid #dee2e6; /* Add border style for table cells */
+    padding: 0.75rem;
+    font-size: 15px;
+}

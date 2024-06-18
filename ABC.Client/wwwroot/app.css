@@ -1,0 +1,41 @@
+:root{
+    --maincolor-darkblue--: #223442;
+}
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    
+}
+
+
+*{
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    box-sizing: content-box;
+}
+
+.cursor-pointer{
+    cursor: pointer;
+}
+
+.text-14px{
+    font-size: 0.875rem;
+}
+
+
+@media print {
+    body{
+        margin: 0;
+    }
+
+        nav,
+        footer,
+        header,
+        PageTitle,
+        body > *:not(main),
+        body > nav,
+        button{
+            display: none !important;
+        }
+}

@@ -1,0 +1,281 @@
+@using ABC.Shared.Models.ViewModels
+@using System.Globalization
+@page "/Summary"
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Order Summary</PageTitle>
+
+<section class="container maincontainer FooterminHeight">
+	<div class="row pt-2 pb-4" id="topbar">
+		<!-- Title -->
+		<div class="col-lg-8 col-md-6 text-start mb-3 mb-sm-0">
+			<h1 class="text">Order Summary</h1>
+		</div>
+		<div class="col-lg-4 text-end my-auto">
+			<a class="btn btn-danger btn-md" href="CartIndex">Back to Cart</a>
+		</div>
+	</div>
+	<EditForm method="post" OnValidSubmit="PlaceOrderHandler" FormName="checkoutFormModel" id="checkoutFormModel" Model="checkoutFormModel">
+		<DataAnnotationsValidator />
+
+		<div class="card shadow border-1 mb-4">
+			<div class="card-body">
+				<div class="container rounded">
+					<div class="row">
+						<div class="col-12 col-lg-6 pb-4">
+							<div class="row">
+								<div class="row">
+									<h3 class="d-flex justify-content-between align-items-center mb-3">
+										<span class="text">Delivery Details:</span>
+									</h3>
+									<hr />
+								</div>
+								<div class="row my-1">
+									<div class="col-3">
+										<label>First Name</label>
+									</div>
+									<div class="col-9">
+										<input @bind-value="UserInfo.FirstName" class="form-control" disabled/>
+									</div>
+								</div>
+								<div class="row my-1">
+									<div class="col-3">
+										<label>Last Name</label>
+									</div>
+									<div class="col-9">
+										<input @bind-value="UserInfo.LastName" class="form-control" disabled />
+									</div>
+								</div>
+								<div class="row my-1">
+									<div class="col-3">
+										<label>Contact No.</label>
+									</div>
+									<div class="col-9">
+										<input @bind-value="UserInfo.PhoneNumber" class="form-control" maxlength="11"/>
+									</div>
+								</div>
+								<div class="row my-1">
+									<div class="col-3">
+										<label>Address Line</label>
+									</div>
+									<div class="col-9">
+										<input @bind-value="UserInfo.Address" class="form-control" />
+									</div>
+								</div>
+								<div class="row my-1">
+									<div class="col-3">
+										<label>City</label>
+									</div>
+									<div class="col-9">
+										<input @bind-value="UserInfo.City" class="form-control" />
+									</div>
+								</div>
+								<div class="row my-1">
+									<div class="col-3">
+										<label>Province</label>
+									</div>
+									<div class="col-9">
+										<input @bind-value="UserInfo.Province" class="form-control" />
+									</div>
+								</div>
+								<div class="row my-1">
+									<div class="col-3">
+										<label>Postal Code</label>
+									</div>
+									<div class="col-9">
+										<input @bind-value="UserInfo.PostalCode" class="form-control" maxlength="4" />
+									</div>
+								</div>
+								<div class="row my-1">
+									<div class="col-3">
+										<label for="paymentMode">Payment Mode</label>
+									</div>
+									<div class="col-9">
+										<input id="paymentMode" value="Cash On Delivery (COD)" class="form-control" disabled/>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!--Order Summary-->
+						<div class="col-12 col-lg-6 pb-4">
+							<h3 class="d-flex justify-content-between align-items-center mb-3">
+								<span class="text">Order Summary:</span>
+							</h3>
+							<hr />
+							<div class="row">
+								<ul class="list-group mb-3">
+									@foreach (var cartItem in shoppingCartList)
+									{
+										<li class="list-group-item d-flex justify-content-between">
+											<div>
+												<h6 class="my-0">@cartItem.Product.productName</h6>
+												<small class="text-muted">Quantity: @cartItem.Quantity</small>
+											</div>
+											<span class="text-muted"><b>@((cartItem.Product.RetailPrice * cartItem.Quantity).ToString("#, ###.00"))</b></span>
+										</li>
+									}
+								</ul>
+							</div>
+							<div class="row"> 
+								<h6>
+									Delivery Fee: @DeliveryFee.ToString("C", new CultureInfo("en-PH"))
+								</h6>
+								<h3>
+									Total: @TotalPrice.ToString("C", new CultureInfo("en-PH"))
+								</h3>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer">
+				<div class="row">
+					<div class="col-6 pt-2">
+						<p style="color:maroon; font-size:14px; font-weight:bold;">
+							Estimate Arrival Date:
+							@DateTime.Now.AddDays(2).ToShortDateString() - @DateTime.Now.AddDays(4).ToShortDateString()
+						</p>
+					</div>
+
+					@if (!string.IsNullOrWhiteSpace(UserInfo.Address) && !string.IsNullOrWhiteSpace(UserInfo.City) && !string.IsNullOrWhiteSpace(UserInfo.Province))
+					{
+						<div class="col-6">
+							<input class="form-check-input" type="checkbox" value="" id="defaultCheck1" data-bs-toggle="modal" data-bs-target="#Terms" @onclick="LoadTerms" @bind="isChecked">
+							<label class="form-check-label">
+								Agree to terms and conditions <a data-bs-toggle="modal" data-bs-target="#Terms" class="link-primary" @onclick="LoadTerms">Return/Replace process</a>
+							</label>
+							<button type="button" class="Placebtn form-control" data-bs-toggle="modal" disabled="@(!isChecked)" data-bs-target="#OrderSummary">Place Order</button>
+						</div>
+
+						<!-- Checkout Modal ORDER SUMMARY -->
+						<div class="modal fade" id="OrderSummary" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content">
+
+									<div class="modal-header bg-primary text-white">
+										<h5 class="modal-title" id="uploadModalLabel">Checkout</h5>
+										<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+
+									<div class="modal-body">
+										<!--Order Summary-->
+										<div class="row justify-content-center">
+											<div class="col-12 pb-4">
+												<h3 class="d-flex justify-content-between align-items-center mb-3">
+													<span class="text">Order Summary:</span>
+												</h3>
+												<hr />
+												<div class="row">
+													<ul class="list-group mb-3">
+														<!-- Loop through shoppingCartList to display items -->
+														@foreach (var cartItem in shoppingCartList)
+														{
+															<li class="list-group-item d-flex justify-content-between">
+																<div>
+																	<h6 class="my-0">@cartItem.Product.productName</h6>
+																	<small class="text-muted">Quantity: @cartItem.Quantity</small>
+																</div>
+																<span class="text-muted"><b>@((cartItem.Product.RetailPrice * cartItem.Quantity).ToString("#,###.00"))</b></span>
+															</li>
+														}
+													</ul>
+												</div>
+												<div class="row">
+													<h6>
+														Delivery Fee: @DeliveryFee
+													</h6>
+													<h3>
+														Total: @TotalPrice.ToString("C", new CultureInfo("en-PH"))
+													</h3>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="modal-footer">
+										<div class="col-12">
+											<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+											<button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+
+						<!-- Terms Modal -->
+						<div class="modal fade" id="Terms" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content">
+
+									<div class="modal-header bg-primary text-white">
+										<h5 class="modal-title" id="uploadModalLabel">Terms & Conditions</h5>
+										<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+
+									<div class="modal-body">
+										<!--Order Summary-->
+										<div class="row justify-content-center">
+											<div class="col-12 pb-4">
+
+												<!--Terms-->
+												<h3 class="d-flex justify-content-between align-items-center mb-3">
+													<span class="text">Terms</span>
+												</h3>
+												<hr />
+												<div class="row">
+													<p>@Content.TermsPolicy</p>
+												</div>
+
+												<!--Replace-->
+												<h3 class="d-flex justify-content-between align-items-center mb-3">
+													<span class="text">Return/Replace</span>
+												</h3>
+												<hr />
+												<div class="row">
+													<p>@Content.returnRefund</p>
+												</div>
+
+												<!--Privacy-->
+												<h3 class="d-flex justify-content-between align-items-center mb-3">
+													<span class="text">Privacy Policy</span>
+												</h3>
+												<hr />
+												<div class="row">
+													<p>@Content.TermsPolicy</p>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="modal-footer">
+										<div class="col-12">
+											<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="No">No</button>
+											<button type="button" class="btn btn-success" data-bs-dismiss="modal">Agree</button>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+					}
+					else
+					{
+						<div class="col-6">
+							<div class="agreementText">
+								<p>By placing this order, you agree to our <a href="/Privacy">Return & Refund process</a></p>
+							</div>
+							<button type="submit" class="Placebtn form-control" disabled>Place Order</button>
+						</div>
+					}
+
+					
+				</div>
+			</div>
+		</div>
+	</EditForm>
+</section>
+

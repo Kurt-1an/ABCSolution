@@ -1,0 +1,15 @@
+﻿h1 {
+    color: #223442;
+    font-weight: bold;
+    padding-bottom: 1em;
+}
+
+.btn {
+    background-color: #223442;
+    color: white;
+}
+
+    .btn:hover {
+        background-color: #223442;
+        color: white;
+    }

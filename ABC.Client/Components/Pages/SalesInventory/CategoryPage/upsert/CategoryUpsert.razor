@@ -1,0 +1,87 @@
+﻿@using ABC.Shared.Models
+@using Layout
+@page "/CategoryUpsert"
+@layout AdminLayout
+
+@rendermode InteractiveServer
+
+<PageTitle>ABC - Category</PageTitle>
+
+<EditForm Model="selectedCategory" OnValidSubmit="SaveCategory">
+	<div class="border p-3 mt-4 container">
+		<InputNumber @bind-Value="selectedCategory.Id" hidden></InputNumber>
+
+		<!--New Product-->
+		<div class="row pt-2 pb-1" id="topbar">
+			<!-- Title -->
+			<div class="col-lg-8 col-sm-12 text-start mb-3 mb-sm-0">
+				<h1 style="color: #223442;"><b>@(selectedCategory.Id != 0 ? "Edit" : "Create") Category</b></h1>
+			</div>
+
+			<!-- Save Button -->
+			<div class="col-lg-4 col-sm-6 text-end mb-3 mb-sm-0">
+
+				@if (selectedCategory.Id != 0)
+				{
+					<button class="btn btn-success" data-bs-toggle="modal" type="button" data-bs-target="#UpsertCategoryModal">
+						<i class="bi bi-floppy"></i> Update
+					</button>
+				}
+				else
+				{
+					<button class="btn btn-success" data-bs-toggle="modal" type="button" data-bs-target="#UpsertCategoryModal">
+						<i class="bi bi-floppy"></i> Save
+					</button>
+				}
+			</div>
+		</div>
+
+		<!--Breadcrumb-->
+		<div class="row pb-2">
+			<nav aria-label="breadcrumb">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="Category">Category List</a></li>
+					<li class="breadcrumb-item active" aria-current="page">@(selectedCategory.Id != 0 ? "Update" : "Create") List</li>
+				</ol>
+			</nav>
+		</div>
+
+		@* <!--Input Field One-->
+		<div class="px-3 mb-2 row">
+			<label class="col-form-label" for="inputCategory">ID:@(selectedCategory.Id != 0 ? selectedCategory.Id : "")</label>
+		</div> *@
+
+		<div class="row">
+			<div class="col-12">
+				<span asp-validation-for="Product.Barcode" class="text-danger"></span>
+				<div class="input-group mb-3">
+					<label class="input-group-text" id="BarcodeLabel">Category</label>
+					<input @bind-value="selectedCategory.Name" type="text" class="form-control" id="BarcodeInput" aria-describedby="BarcodeLabel">
+				</div>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+<!-- Improved and Styled Modal -->
+<div class="modal fade mt-4" id="UpsertCategoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header text-dark">
+				<h5 class="modal-title" id="exampleModalLabel">@(selectedCategory.Id != 0 ? "Edit" : "Create") Category</h5>
+				<button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+
+			<div class="modal-body">
+				<div class="mb-3">
+					<span class="fw-bold">Are you sure you want to @(selectedCategory.Id != 0 ? "Edit" : "Create") this category?</span>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				<a class="btn btn-danger" @onclick="SaveCategory" type="button" data-bs-dismiss="modal">Confirm</a>
+			</div>
+		</div>
+	</div>
+</div>
+

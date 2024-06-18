@@ -1,0 +1,121 @@
+﻿@page "/Account/ResendEmailConfirmation"
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using ABC.Client.Data
+@using ABC.Shared.Models
+@using ABC.Shared.Utility
+
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IEmailSender<ApplicationUser> EmailSender
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+
+
+@using ABC.Client.Components.Layout
+@layout NoLayout
+
+<link href="ResendEmailConfirmation.razor.css" rel="stylesheet" />
+
+<PageTitle>ABC - Resend email confirmation</PageTitle>
+
+<section class="card shadow border-2 col-md-5 my-lg-5 mx-auto  p-5 .FooterminHeight">
+    <div class="text-center">
+        <h1>Resend email confirmation</h1>
+        <h4>Enter your email</h4>
+        <hr />
+    </div>
+    <StatusMessage Message="@message" />
+    <div class="row my-4">
+        <EditForm Model="Input" FormName="resend-email-confirmation" OnValidSubmit="OnValidSubmitAsync" method="post">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Email" class="form-control" aria-required="true" placeholder="name@example.com" />
+                <label for="email" class="form-label">Email</label>
+                <ValidationMessage For="() => Input.Email" class="text-danger" />
+            </div>
+            <button type="submit" class="w-100 btn btn-lg">Resend</button>
+        </EditForm>
+    </div>
+</section>
+
+
+
+@code {
+    private EmailSender _EmailSender = new(AppSettingsHelper.EmailSenderMail, AppSettingsHelper.EmailSenderPw, AppSettingsHelper.EmailSenderSmtp, AppSettingsHelper.EmailSenderPort);
+
+    private string? message;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    private async Task OnValidSubmitAsync()
+    {
+        var user = await UserManager.FindByEmailAsync(Input.Email!);
+        if (user is null)
+        {
+            message = "Verification email sent. Please check your email.";
+            return;
+        }
+
+        var userId = await UserManager.GetUserIdAsync(user);
+        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var imgSrc = "https://i.ibb.co/WxWpFbq/ABCLogo.png";
+
+
+        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+            NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
+            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
+
+
+        // Construct the HTML email body with the callback URL as a link
+        var emailBody = $@"
+            <html>
+            <head>
+                <title>We are delighted to welcome you to ABC Shopping Website!</title>
+            </head>
+            <body style='font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;'>
+                <table width='100%' cellpadding='0' cellspacing='0' border='0'>
+                    <tr>
+                        <td align='center'>
+                            <table cellpadding='0' cellspacing='0' border='0' style='max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+                                <tr>
+                                    <td style='text-align: center;'>
+                                        <img src='{imgSrc}' alt='ABC Shopping Website Logo' style='max-width: 200px; margin-bottom: 20px;'>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h1 style='color: #333; text-align: center; margin-top: 0;'>Welcome to ABC Shopping Website!</h1>
+                                        <p style='color: #666; line-height: 1.6; margin-bottom: 20px; text-align: center;'>To verify your email, please click on the following link:</p>
+                                        <p style='text-align: center;'><a href='{callbackUrl}' style='color: #007bff; text-decoration: none; display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; border-radius: 5px; text-transform: uppercase;'>Verify Email</a></p>
+                                        <p style='color: #666; line-height: 1.6; margin-bottom: 20px; text-align: center;'>If you did not request for verification on our website, please disregard this email.</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>
+        ";
+        await _EmailSender.SendEmailAsync(Input.Email, "Verification Email", emailBody);
+
+        message = "Verification email sent. Please check your email.";
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = "";
+    }
+}

@@ -1,0 +1,35 @@
+@using ABC.Shared.Models
+@page "/Privacy"
+
+<link href="Privacy.razor.css" rel="stylesheet" />
+
+<PageTitle>Privacy</PageTitle>
+
+<div class="container minHeight FooterminHeight">
+    <div class="row">
+        <h1>Terms of Use</h1>
+        <div class="row">
+            <span>
+                @content.TermsPolicy
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+        <h1>Return/Replace Policy</h1>
+        <div class="row">
+            <span>
+                @content.returnRefund
+            </span>
+        </div>
+    </div>
+    
+    <div class="row">
+        <h1>Privacy Policy</h1>
+        <div class="row">
+            <span>
+                @content.Privacy
+            </span>
+        </div>
+    </div>
+</div>
